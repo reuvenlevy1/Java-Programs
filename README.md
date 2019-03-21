@@ -1,2 +1,2 @@
-# Java-Programs
-Interview Questions and other Java Programs
+# Java Programs
+Interview Questions, Data Structures and other Java Programs
