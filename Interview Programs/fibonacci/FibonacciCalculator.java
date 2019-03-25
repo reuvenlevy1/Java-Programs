@@ -83,7 +83,7 @@ public class FibonacciCalculator {
 		FibonacciCalculator.printSeq(1);
 		
 		//Example 3 - length over 2
-		System.out.println("\n\nF(2):");
+		System.out.println("\n\nF(5):");
 		FibonacciCalculator.printValue(5);
 		FibonacciCalculator.printSeq(5);
 		
