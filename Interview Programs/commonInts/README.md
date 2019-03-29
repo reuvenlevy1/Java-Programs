@@ -1,5 +1,3 @@
-Program:
-
 Returns an array of common integers between two sorted arrays.
 This is done in the following way:
   1. One while loop incrementing indexes of either array depending on if 
