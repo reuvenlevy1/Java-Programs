@@ -1,0 +1,15 @@
+#transactionID,transactionType,amount,balance
+1,withdrawal,50.52,1050.0
+2,deposit,100.52,1100.52
+3,withdrawal,50.0,1000.0
+4,deposit,0.75,1050.0
+5,withdrawal,250.75,1049.25
+6,deposit,320.0,1300.0
+7,withdrawal,20.0,980.0
+8,deposit,1.0,1000.0
+9,withdrawal,0.5,999.0
+10,withdrawal,0.0,999.5
+11,deposit,525.0,1000.0
+12,withdrawal,275.0,475.0
+13,withdrawal,250.00,750.00
+14,deposit,420.00,1000.00
