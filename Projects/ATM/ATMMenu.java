@@ -89,26 +89,31 @@ public class ATMMenu {
                     // transfer(amount);
                     System.out.println(Main.msg.ATMMenuIncompleteMessage());
                     break;
-                } else if (selection.equals("4") || selection.equals("transaction history")) {      //FIXME: Print this out in a pretty to read format      --> Barkley
+                } else if (selection.equals("4") || selection.equals("transaction history")) {      //FIXME: Print this out in a pretty to read format
                                                                                                     // Create a new method in Printer.java > print4ColTable
                                                                                                     //Need to create a function for printing Title and then function for printing Columns to get everything in 1 table
                     System.out.print("TRANSACTION HISTORY\n"+Main.msg.returnToATMMenu()+"\n");
-                    boolean newLineFlag = false;
-                    for (String[] key : csv.userRecordsList) {
-                        int count = 0;
-                        if (newLineFlag) {
-                            System.out.print("\n");
-                        }
-                        for (String subkey : key) {
-                            System.out.print(subkey);                                               //FIXME: Instead of printing this out, put this into a 2D array and copy this over to the new function "Printer.printMultipleColTable()"
-                                                                                                    // Read the code below which works in compiler: https://www.tutorialspoint.com/compile_java_online.php
-                            if (count != csv.userRecordsList.get(0).length-1) {
-                                System.out.print(",");
-                            }
-                            count++;
-                        }
-                        newLineFlag = true;
-                    }
+                    
+                    Printer.printMultipleColTable(csv.userRecordsList);
+                    // boolean newLineFlag = false;
+                    // int i=0;
+                    // int j=0;
+                    // String[][] transArr = new String[][];
+                    // for (String[] key : csv.userRecordsList) {
+                    //     int count = 0;
+                    //     if (newLineFlag) {
+                    //         System.out.print("\n");
+                    //     }
+                    //     for (String subkey : key) {
+                    //         System.out.print(subkey);                                               //FIXME: Instead of printing this out, put this into a 2D array and copy this over to the new function "Printer.printMultipleColTable()"
+                    //                                                                                 // Read the code below which works in compiler: https://www.tutorialspoint.com/compile_java_online.php
+                    //         if (count != csv.userRecordsList.get(0).length-1) {
+                    //             System.out.print(",");
+                    //         }
+                    //         count++;
+                    //     }
+                    //     newLineFlag = true;
+                    // }
                     // Print newline for formatting
                     System.out.print("\n");
                     break;
@@ -203,10 +208,6 @@ public class ATMMenu {
 
 
 
-
-
-
-
 // Transition this code for "4. Transaction History", then can delete:
 // import java.util.ArrayList;
 // import java.util.stream.Collectors;
@@ -283,4 +284,4 @@ public class ATMMenu {
 //         }
 //         System.out.format("+"+tableBorder+"+%n");
 //      }
-}
+// }

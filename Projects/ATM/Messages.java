@@ -17,12 +17,7 @@ public class Messages {
     final String DELETE_ACCOUNT = "DELETE ACCOUNT";
     final String SIGN_OUT = "Sign Out";
 
-    public Messages(){
-        //Scanner sc = new Scanner(System.in);
-        //String boner = sc.nextLine();
-        //System.out.println(boner);
-        //sc.close();
-    }
+    public Messages(){}
 
     public String greetMessage() {
         return "Welcome to Bank of Money!";

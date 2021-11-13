@@ -99,11 +99,11 @@ public class Main {
 
 
         // 9-27-2021 Requirements:
-            // Barkley fix print of transactions                                                                --> Curerntly working on (10-14-2021)
+            //*COMPLETE* Fix print of transactions                                                                --> Curerntly working on (10-14-2021)
             // Every line that will exit the program to the beginning should have to newLine characters
-            //*COMPLETE* Reuven FIX: After choosing an ATM option, you are unable to log back in.               --> Curerntly working on (10-14-2021) - ERROR inside CSVFileHandler.java LINE 64, checkUserCSV() method: userRecordsList.size() != 0
-            // Fix Full computer paths to csv files with machine/relative paths                                 --> Barkley
-            // Fix the display of money when being outputted to the screen to separate any numbers of over 3 digits with commas, to have in Money format
+            //*COMPLETE* After choosing an ATM option, you are unable to log back in.               --> Curerntly working on (10-14-2021) - ERROR inside CSVFileHandler.java LINE 64, checkUserCSV() method: userRecordsList.size() != 0
+            //*COMPLETE* Fix Full computer paths to csv files with machine/relative paths
+            // Fix the display of money when being outputted to the screen to separate any numbers of over 3 digits with commas, to have in Money format        --> Code for this has been written, but needs to be implemented
             // Finish TRANSFER option
             // Finish ACCOUNT STATS option
             // Finish user/admin account separation

@@ -17,15 +17,16 @@ import java.util.LinkedHashMap;
  */
 public class CSVFileHandler {
     /**
-     * Location of a CSV file that holds all username and pin data for every user
-     */
-    final String ACCOUNTSCSV = "C:/Users/Reuven/Java Projects/ATM/accounts.csv";        //FIXME: Include a relative path (or MACHINE_PATH + RELATIVE PATH)
-    
-    /**
      * Directory of all CSV files
      */
-    public String csvPath = "C:/Users/Reuven/Java Projects/ATM/";                       //FIXME: Include a relative path (or MACHINE_PATH + RELATIVE PATH)
+    public String csvPath = System.getProperty("user.dir")+"\\ATM\\csv files\\";
 
+    /**
+     * Location of a CSV file that holds all username and pin data for every user
+     */
+    // final String ACCOUNTSCSV = "C:/Users/Reuven/Java Projects/ATM/accounts.csv";        //FIXME: Include a relative path (or MACHINE_PATH + RELATIVE PATH)
+    final String ACCOUNTSCSV = csvPath+"accounts.csv";
+    
     /**
      *  Holds all the accounts.csv data in username:pin format
      *  All data will be manipulated here and added to file at end
