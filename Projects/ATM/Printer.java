@@ -62,7 +62,7 @@ public class Printer {
         
         // Builds leftAlignFormat for each column for table output
         List<String> leftAlignFormat = new ArrayList<String>();
-        for (int i=0; i<maxColLens.length; i++){
+        for (int i=0; i<maxColLens.length; i++) {
             if (i == maxColLens.length-1)
                 leftAlignFormat.add("| %-"+maxColLens[i]+"s |%n");
             else
@@ -93,10 +93,9 @@ public class Printer {
         for (int i=0; i<numOfCols; i++){
             longestString = 0;
             // Length of rows in the ith column
-            for (int j=0; j<myString.size(); j++){
-                // Remove comment character
-                if (myString.get(j)[i].substring(0,1).equals("#"))
-                    myString.get(j)[i] = myString.get(j)[i].substring(1);
+            for (int j=0; j<myString.size(); j++) {
+                // Call method here that will change output as needed
+                myString.get(j)[i] = DataHandler.beautifier(myString.get(j)[i]);
                 // Store longest string
                 if (myString.get(j)[i].length() > longestString)
                     longestString = myString.get(j)[i].length();
@@ -104,7 +103,7 @@ public class Printer {
             maxLenInCol[i] = longestString;
         }
         return maxLenInCol;
-     }
+    }
      
     /**
      * Prints a border around a table of multiple columns
@@ -128,5 +127,5 @@ public class Printer {
             }
         }
         System.out.format(TABLE_BORDER_EDGE+tableBorder+TABLE_BORDER_EDGE+"%n");
-     }
+    }
 }

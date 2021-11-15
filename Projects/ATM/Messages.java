@@ -5,112 +5,109 @@ import java.util.Map;
  */
 
 public class Messages {
-    // Errors messages
-    // Screen options
-    // Welcome text
-    // Goodbye Text
-    final String WITHDRAW = "Withdraw";
-    final String DEPOSIT = "Deposit";
-    final String TRANSFER = "Transfer";
-    final String TRANSACTION_HISTORY = "Transaction History";
-    final String ACCOUNT_STATS = "Account Stats";
-    final String DELETE_ACCOUNT = "DELETE ACCOUNT";
-    final String SIGN_OUT = "Sign Out";
-
     public Messages(){}
 
-    public String greetMessage() {
+    public static String greetMessage() {
         return "Welcome to Bank of Money!";
     }
 
-    public String exitMessage() {
+    public static String exitMessage() {
         return "Thank you for choosing Bank of Money!";
     }
 
-    public String signInUsernameMessage() {
+    public static String signInUsernameMessage() {
         return "Enter username: ";
     }
 
-    public String signInPINMessage() {
+    public static String signInPINMessage() {
         return "Enter PIN: ";
     }
 
-    public String accountErrorMessage() {
+    public static String accountErrorMessage() {
         return "Error with username or PIN. Please try again.";
     }
 
-    public String accountCheckRequirementsErrorMessage() {
+    public static String accountCheckRequirementsErrorMessage() {
         return "Your account details do not fit the requirements. Please try again.";
     }
 
-    public String accountValidMessage() {
+    public static String accountValidMessage() {
         return "Welcome into your account.";
     }
 
-    public String generalErrorMessage() {
+    public static String generalErrorMessage() {
         return "Something went wrong!";
     }
 
-    public String accountDeleteConfirmFailMessage() {
+    public static String accountDeleteConfirmFailMessage() {
         return "Username was mistyped, account deletion was aborted.";
     }
 
-    public String accountDeleteConfirmationMessage() {
+    public static String accountDeleteConfirmationMessage() {
         return "Please type in your case-sensitive username to confirm DELETING your account.";
     }
 
-    public String ATMMenuIncompleteMessage() {
+    public static String atmMenuIncompleteMessage() {
         return "This choice is currently being worked on. Please check again in the future.";
     }
 
-    public String ATMMenuInvalidChoice() {
-        return "You have chosen an invalid option. Please try again.\n";
+    public static String atmMenuInvalidChoice() {
+        return "You have chosen an invalid option. Please try again.";
     }
     
-    public String accountDeletedMessage(Map<String,String>accountDetails) {
+    public static String accountDeletedMessage(Map<String,String>accountDetails) {
         return "Your account "+accountDetails.get("username")+" has successfully been deleted.";
     }
 
-    public String withdrawAmountMessage() {
+    public static String withdrawAmountMessage() {
         return "Please enter the amount you would like to withdraw: $";
     }
 
-    public String depositAmountMessage() {
+    public static String depositAmountMessage() {
         return "Please enter the amount you would like to deposit: $";
     }
 
-    public String withdrawErrorMessage(double amount, double balance) {
-        return "Your withrawal amount: "+amount+"\nexceeds your current balance: "+balance+"\nPlease enter a new amount within your funds.";
+    public static String withdrawErrorMessage(String amount, String balance) {
+        return "Your withrawal amount: "+amount+"\nexceeds your current balance: "+balance
+        +"\nPlease enter a new amount within your funds.";
     }
 
-    public String depositErrorMessage(double amount, double balance) {
-        return "Your deposit amount: "+amount+"\nexceeds your current balance: "+balance+"\nPlease enter a new amount greater than $0.00.";
+    public static String depositErrorMessage(String amount, String balance) {
+        return "Your deposit amount: "+amount+"\nexceeds your current balance: "+balance
+        +"\nPlease enter a new amount greater than $0.00.";
     }
 
-    public String currentBalanceMessage(double balance) {
+    public static String invalidTransactionInputMessage() {
+        return "You have entered an invalid input. input must contain only numbers and at most 2 decimal places."
+        +"Please try again";
+    }
+
+    public static String currentBalanceMessage(String balance){
         return "Your current balance is $"+balance;
     }
 
-    public String TransactionCompleteMessage(double balance) {
+    public static String transactionCompleteMessage(String balance) {
         return "Your new balance is: $"+balance+"\nYour transaction has now been completed.";
     }
 
-    public String fileNotFoundExceptionMessage(String userCSV) {
+    public static String fileNotFoundExceptionMessage(String userCSV) {
         return "ERROR: The filename "+userCSV+" does not exist. Please make sure "+userCSV
         + " file was created successfully.";
     }
 
-    public String shutdownATMMessage() {
-        return "Type in 'quit' to shutdown ATM.";
+    public static String shutdownATMMessage() {
+        return "Type in \""+ATMMenu.QUIT.toLowerCase()+"\" at any time to shutdown ATM.";
     }
 
-    public String returnToATMMenu() {
+    public static String returnToATMMenu() {
         return "Type in 'back' to return to ATM Menu";
     }
 
-    public void ATMMenuMessage() {
+    public static void atmMenuMessage() {
         String title = "Enter the name/number of the action:";
-        String[] atmMenuOptions = new String[]{"1. "+WITHDRAW, "2. "+DEPOSIT, "3. "+TRANSFER, "4. "+TRANSACTION_HISTORY, "5. "+ACCOUNT_STATS, "6. "+DELETE_ACCOUNT, "7. "+SIGN_OUT,};
+        String[] atmMenuOptions = new String[]{"1. "+ATMMenu.WITHDRAW, "2. "+ATMMenu.DEPOSIT, "3. "
+        +ATMMenu.TRANSFER, "4. "+ATMMenu.TRANSACTION_HISTORY,"5. "+ATMMenu.ACCOUNT_STATS, "6. "
+        +ATMMenu.DELETE_ACCOUNT, "7. "+ATMMenu.SIGN_OUT};
         
         Printer.print1ColTable(title, atmMenuOptions);
     }

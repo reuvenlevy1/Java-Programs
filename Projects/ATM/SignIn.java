@@ -20,25 +20,20 @@ public class SignIn {
         // Holds value for account being correct/incorrect
         boolean valid = false;
         accountDetails = new HashMap<String, String>();
-        System.out.println("\n"+Main.msg.greetMessage());
+        System.out.println(Messages.greetMessage());
 
         while (!valid) {
             // Enter username
-            System.out.println("\n"+Main.msg.shutdownATMMessage()+"\n"+Main.msg.signInUsernameMessage());
+            System.out.print(Messages.shutdownATMMessage()+"\n\n"+Messages.signInUsernameMessage());
             username = Main.userInput.nextLine().trim();
-            checkInputForQuit(username);
+            DataHandler.checkInputForQuit(username, csv);
             accountDetails.put("username", username);
 
             // Enter PIN
-            System.out.println(Main.msg.signInPINMessage());
-            pin = Main.userInput.nextLine();            // FIXME: must perform a check to make sure PIN is only numbers.
-            // Do a try and catch statmement to make the pin equal to an int
-                // we do this to make sure if the user types in a string, it won't crash the program, but
-                // should inform the user to re-enter password
-                // If this works, can delete the PIN checks for anything that isn't an integer
-            
+            System.out.print(Messages.signInPINMessage());
+            pin = Main.userInput.nextLine();            
 
-            checkInputForQuit(pin);
+            DataHandler.checkInputForQuit(pin, csv);
             accountDetails.put("pin", pin);
 
             // Check username and PIN requirement
@@ -46,7 +41,7 @@ public class SignIn {
                 // Check if user account details are valid
                 AccountsCheck validateAcc = new AccountsCheck(csv);
                 valid = validateAcc.validAccount(accountDetails);
-            } else System.out.println(Main.msg.accountCheckRequirementsErrorMessage());
+            } else System.out.println(Messages.accountCheckRequirementsErrorMessage());
         }
         // Call to read readUserCSV file for validated user     
         if (csv.checkUserCSV(accountDetails)){
@@ -58,20 +53,16 @@ public class SignIn {
     private boolean checkRequirements(String username, String pin) {
         // Check if username contains invalid characters
         char[] usernameInvalidCharsList = "!@#$%^&*()-_=+`~\\|[];:'\",./?".toCharArray();
-        for (char invalidChar : usernameInvalidCharsList){
-            if (username.contains(Character.toString(invalidChar))){
+        for (char invalidChar : usernameInvalidCharsList) {
+            if (username.contains(Character.toString(invalidChar)))
                 return false;
-                // return exact error message: "username contains 1 or more invalid characters. Please make sure to use only alpha-numeric characters."
-            }
         }
 
         // Check if pin contains invalid characters
         char[] pinInvalidCharsList = "abcdefghijklmnopqrstuvwxyz!@#$%^&*()-_=+`~\\|[];:'\",./?".toCharArray();
-        for (char invalidChar : pinInvalidCharsList){
-            if (pin.contains(Character.toString(invalidChar))){
+        for (char invalidChar : pinInvalidCharsList) {
+            if (pin.contains(Character.toString(invalidChar)))
                 return false;
-                // return exact error message: "pin contains 1 or more invalid characters. Please make sure to use only numeric characters."
-            }
         }
 
         // Check if username is over 16 characters
@@ -101,11 +92,4 @@ public class SignIn {
         }
         return true;
     }
-
-    public static void checkInputForQuit(String input) {
-        if (input.equals("quit".toLowerCase())) {
-            System.exit(0);
-        }
-    }
-
 }

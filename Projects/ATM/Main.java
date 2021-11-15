@@ -54,7 +54,6 @@ import java.io.IOException;
 import java.util.Scanner;
 public class Main {
     public static final Scanner userInput = new Scanner(System.in);
-    public static final Messages msg = new Messages();
     public static void main(String[] args) throws FileNotFoundException, IOException {         
         // Generates the accounts.csv
         CSVFileHandler csv = new CSVFileHandler();
@@ -108,6 +107,8 @@ public class Main {
             // Finish ACCOUNT STATS option
             // Finish user/admin account separation
             // Need to test the "back" and "quit" option at every input (Can we automate this type of testing?)
+        
+            // withdrawals and deposits, need to make a case for when user doesn't input an integer.
 
     }
 }

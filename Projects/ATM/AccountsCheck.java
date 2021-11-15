@@ -20,11 +20,11 @@ public class AccountsCheck {
     
     public boolean validAccount(Map<String, String> accountDetails) {
         if (verifyUser(accountDetails)) {
-            System.out.println(Main.msg.accountValidMessage());
+            System.out.println("\n"+Messages.accountValidMessage());
             return true;
         } 
         else if (verifyUser(accountDetails) == false) {         //return <error message>;
-            System.out.println(Main.msg.accountErrorMessage());
+            System.out.println(Messages.accountErrorMessage());
             return false;
         }
         // Shouldn't come here

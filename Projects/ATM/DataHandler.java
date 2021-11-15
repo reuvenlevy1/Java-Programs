@@ -1,12 +1,22 @@
+import java.io.IOException;
+
+/**
+ * Prepares data for printing
+ */
 public class DataHandler {
 
-    public String beautifier(String sNum) {
+    public static String beautifier(String myString) {
         //create an integer variable of the string
-        int iNum = (int)Double.parseDouble(sNum);
-        return "hooray";
-    
+        // int iNum = (int)Double.parseDouble(myString);
+
+        // Assure there's 2 digits after decimal
+        myString = twoDecimalFormat(myString);
+        // Remove comment character from string if exists
+        myString = removeCommentChar(myString);
+
+        return myString;
         /*
-        //BARKLEY'S CODE
+        //ORIGINAL CODE
         public class test {
             public static void main(String[] args) {
                 int num = 985421;
@@ -26,7 +36,7 @@ public class DataHandler {
             }
         }
 
-        //REUVEN'S CODE
+        //NEW CODE
         public class HelloWorld{
             public static void main(String []args){
                 String sNum = "1000.00";
@@ -123,5 +133,57 @@ public class DataHandler {
         }
         */
         
+    }
+
+    /**
+     * Assure String is in money format with 2 decimal places
+     * 
+     * @param myString: input string from chosen ATM Menu option 
+     * @return
+     */
+    private static String twoDecimalFormat(String myString){
+        // Check if string starts with a number and contains a decimal
+        if (myString.matches("^[0-9].*."))
+            // Check for 2 digits after decimal
+            if (!myString.matches(".[0-9]") &&
+            !myString.substring(myString.length()-3,myString.length()-2).equals("."))
+                myString = myString+0;
+        return myString;
+    }
+
+    /**
+     * Removes the comment character from a string
+     * 
+     * @param myString: input string from chosen ATM Menu option data
+     * @return
+     */
+    private static String removeCommentChar(String myString){
+        // Remove comment character
+        if (myString.substring(0,1).equals("#"))
+            myString = myString.substring(1);
+        return myString;
+    }
+
+    /**
+     * Check if user input is valid for money transactions or contains invalid characters
+     */
+    public static boolean checkValidMoneyInput(String input) {
+        if (input.toLowerCase().matches(".*[a-z].*")) return false;
+        else return true;
+    }
+
+    /**
+     * Closes csv file and exits program if input is "quit"
+     * 
+     * @param input: user input
+     * @param csv: current accounts.csv object
+     * @throws IOException
+     */
+    public static void checkInputForQuit(String input, CSVFileHandler csv) throws IOException {
+        if (input.toLowerCase().equals("quit")) {
+            System.out.println("\n"+Messages.exitMessage()+"\n\n");
+            csv.fw.close();
+            System.exit(0);
+        }
     }
 }
