@@ -26,14 +26,14 @@ public class SignIn {
             // Enter username
             System.out.print(Messages.shutdownATMMessage()+"\n\n"+Messages.signInUsernameMessage());
             username = Main.userInput.nextLine().trim();
-            DataHandler.checkInputForQuit(username, csv);
+            DataHandler.checkInputForQuit(username, csv, CSVFileHandler.csvOpen);
             accountDetails.put("username", username);
 
             // Enter PIN
             System.out.print(Messages.signInPINMessage());
-            pin = Main.userInput.nextLine();            
+            pin = Main.userInput.nextLine().trim();
 
-            DataHandler.checkInputForQuit(pin, csv);
+            DataHandler.checkInputForQuit(pin, csv, CSVFileHandler.csvOpen);
             accountDetails.put("pin", pin);
 
             // Check username and PIN requirement
@@ -41,15 +41,27 @@ public class SignIn {
                 // Check if user account details are valid
                 AccountsCheck validateAcc = new AccountsCheck(csv);
                 valid = validateAcc.validAccount(accountDetails);
-            } else System.out.println(Messages.accountCheckRequirementsErrorMessage());
+            } else System.out.println(Messages.accountCheckRequirementsErrorMessage()+"\n");
+        }
+        AccountsCheck validateAcc = new AccountsCheck(csv);
+        
+        if (validateAcc.verifyAdmin(accountDetails)) {
+            // Send to ATMMenu page for valid account
+            AdminATMMenu atm = new AdminATMMenu(accountDetails, csv);
         }
         // Call to read readUserCSV file for validated user     
-        if (csv.checkUserCSV(accountDetails)){
+        else if (csv.checkUserCSV(accountDetails)) {
             // Send to ATMMenu page for valid account
             ATMMenu atm = new ATMMenu(accountDetails, csv);
-        }
+        } 
     }
-
+    
+    /**
+     * 
+     * @param username
+     * @param pin
+     * @return
+     */
     private boolean checkRequirements(String username, String pin) {
         // Check if username contains invalid characters
         char[] usernameInvalidCharsList = "!@#$%^&*()-_=+`~\\|[];:'\",./?".toCharArray();
@@ -76,20 +88,6 @@ public class SignIn {
         }
 
         // Add more requirements in here
-        return true;
-    }
-
-    /**
-     * Checks if username already exists in accounts.csv
-     * 
-     * @return
-     */
-    private boolean checkDupUsers(String username, CSVFileHandler csv) {
-        try {
-            csv.accountRecordsMap.get(username);
-        } catch (NullPointerException e) {
-            return false;
-        }
         return true;
     }
 }

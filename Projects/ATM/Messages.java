@@ -16,23 +16,45 @@ public class Messages {
     }
 
     public static String signInUsernameMessage() {
-        return "Enter username: ";
+        return "Enter Username: ";
     }
 
     public static String signInPINMessage() {
         return "Enter PIN: ";
     }
 
+    public static String adminCreateUsernameMessage(){
+        return "Please type in the name of the user you wish to create:\nUsername: ";
+    }
+
+    public static String adminCreatePINMessage(){
+        return "Please type in the user's 6 digit PIN:\nPIN: ";
+    }
+
     public static String accountErrorMessage() {
-        return "Error with username or PIN. Please try again.";
+        return "Error with Username or PIN. Please try again.";
+    }
+
+    public static String accountCheckDuplicateUserErrorMessage() {
+        return "This username already exists. Please choose a different username.";
     }
 
     public static String accountCheckRequirementsErrorMessage() {
-        return "Your account details do not fit the requirements. Please try again.";
+        return "Your account details do not fit the requirements. Username must be"
+            +"alpha-numerical and less than 16 characters and PIN must be 6 "
+            +"digits. Please try again.";
     }
 
     public static String accountValidMessage() {
         return "Welcome into your account.";
+    }
+
+    public static String adminAccountValidMessage() {
+        return "Welcome into your admin account!";
+    }
+
+    public static String adminAccountCreatedMessage() {
+        return "Account has been successfully created.";
     }
 
     public static String generalErrorMessage() {
@@ -44,14 +66,14 @@ public class Messages {
     }
 
     public static String accountDeleteConfirmationMessage() {
-        return "Please type in your case-sensitive username to confirm DELETING your account.";
+        return "Please type in your case-sensitive Username to confirm DELETING your account.";
     }
 
     public static String atmMenuIncompleteMessage() {
         return "This choice is currently being worked on. Please check again in the future.";
     }
 
-    public static String atmMenuInvalidChoice() {
+    public static String atmMenuInvalidChoiceMessage() {
         return "You have chosen an invalid option. Please try again.";
     }
     
@@ -63,31 +85,38 @@ public class Messages {
         return "Please enter the amount you would like to withdraw: $";
     }
 
-    public static String depositAmountMessage() {
-        return "Please enter the amount you would like to deposit: $";
-    }
-
     public static String withdrawErrorMessage(String amount, String balance) {
         return "Your withrawal amount: "+amount+"\nexceeds your current balance: "+balance
         +"\nPlease enter a new amount within your funds.";
     }
 
+    public static String withdrawNewAccountMessage() {
+        return "You just opened your account and don't have any funds yet! Please make a deposit first. ";
+    }
+
+    public static String depositAmountMessage() {
+        return "Please enter the amount you would like to deposit: $";
+    }
+
     public static String depositErrorMessage(String amount, String balance) {
-        return "Your deposit amount: "+amount+"\nexceeds your current balance: "+balance
-        +"\nPlease enter a new amount greater than $0.00.";
+        return "Please enter an amount greater than $0.00.";
+    }
+
+    public static String depositNewAccountMessage() {
+        return "You just opened your account and don't have any funds yet. ";
     }
 
     public static String invalidTransactionInputMessage() {
-        return "You have entered an invalid input. input must contain only numbers and at most 2 decimal places."
+        return "You have entered an invalid input. input must contain only numbers and at most 2 decimal places. "
         +"Please try again";
     }
 
     public static String currentBalanceMessage(String balance){
-        return "Your current balance is $"+balance;
+        return "Your current balance is "+balance;
     }
 
     public static String transactionCompleteMessage(String balance) {
-        return "Your new balance is: $"+balance+"\nYour transaction has now been completed.";
+        return "Your new balance is: "+balance+"\nYour transaction has now been completed.";
     }
 
     public static String fileNotFoundExceptionMessage(String userCSV) {
@@ -99,16 +128,35 @@ public class Messages {
         return "Type in \""+ATMMenu.QUIT.toLowerCase()+"\" at any time to shutdown ATM.";
     }
 
-    public static String returnToATMMenu() {
-        return "Type in 'back' to return to ATM Menu";
+    public static String returnToATMMenuMessage() {
+        return "Type in \"back\" to return to ATM Menu";
+    }
+
+    public static String signOutMessage() {
+        return "You have successfully signed out of your account.";
     }
 
     public static void atmMenuMessage() {
+        System.out.println();
         String title = "Enter the name/number of the action:";
-        String[] atmMenuOptions = new String[]{"1. "+ATMMenu.WITHDRAW, "2. "+ATMMenu.DEPOSIT, "3. "
-        +ATMMenu.TRANSFER, "4. "+ATMMenu.TRANSACTION_HISTORY,"5. "+ATMMenu.ACCOUNT_STATS, "6. "
-        +ATMMenu.DELETE_ACCOUNT, "7. "+ATMMenu.SIGN_OUT};
-        
+        String[] atmMenuOptions = new String[]{
+            ATMMenu.WITHDRAW_NUM+". "+ATMMenu.WITHDRAW,
+            ATMMenu.DEPOSIT_NUM+". "+ATMMenu.DEPOSIT,
+            ATMMenu.TRANSFER_NUM+". "+ATMMenu.TRANSFER,
+            ATMMenu.TRANSACTION_HISTORY_NUM+". "+ATMMenu.TRANSACTION_HISTORY,
+            ATMMenu.ACCOUNT_STATS_NUM+". "+ATMMenu.ACCOUNT_STATS,
+            ATMMenu.DELETE_ACCOUNT_NUM+". "+ATMMenu.DELETE_ACCOUNT,
+            ATMMenu.SIGN_OUT_NUM+". "+ATMMenu.SIGN_OUT};
+        Printer.print1ColTable(title, atmMenuOptions);
+    }
+
+    public static void adminATMMenuMessage() {
+        System.out.println();
+        String title = "Enter the name/number of the action:";
+        String[] atmMenuOptions = new String[]{
+            AdminATMMenu.ADD_ACCOUNT_NUM+". "+AdminATMMenu.ADD_ACCOUNT,
+            // AdminATMMenu.DELETE_ACCOUNT_NUM+". "+AdminATMMenu.DELETE_ACCOUNT,
+            AdminATMMenu.SIGN_OUT_NUM+". "+AdminATMMenu.SIGN_OUT};
         Printer.print1ColTable(title, atmMenuOptions);
     }
 }

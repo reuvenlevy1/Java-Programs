@@ -16,49 +16,47 @@ import java.util.LinkedHashMap;
  * Reads/writes to/from CSV files
  */
 public class CSVFileHandler {
-    /**
-     * Directory of all CSV files
-     */
+    // Directory of all CSV files
     public String csvPath = System.getProperty("user.dir")+"\\ATM\\csv files\\";
-
-    /**
-     * Location of a CSV file that holds all username and pin data for every user
-     */
+    // Location of a CSV file that holds all username and pin data for every user
     final String ACCOUNTSCSV = csvPath+"accounts.csv";
     
+    private static final String COMMA_DELIMITER = ",";
     /**
-     *  Holds all the accounts.csv data in username:pin format
-     *  All data will be manipulated here and added to file at end
-     *  of transaction
+     * Holds all the accounts.csv data in username:pin format
+     * All data will be manipulated here and added to file at end
+     * of transaction
      */
     Map<String,String> accountRecordsMap = new LinkedHashMap<String,String>();
-
     /**
      * Holds all the <user>.csv data in a list of transactions that hold an array of
      * transactionID,transactionType,amount,balance
      */
     ArrayList<String[]> userRecordsList = new ArrayList<String[]>();
-
-    /**
-     * Constants
-     */
-    private static final String COMMA_DELIMITER = ",";
-
-    /**
-     * FileWriter
-     */
-    FileWriter fw;
     
+    FileWriter fw;
+
+    static boolean csvOpen = false;
+
     // Manually put it the username and pin to account for comment in map
     public CSVFileHandler() {}
-
+    
+    /**
+     * 
+     * @throws FileNotFoundException
+     * @throws IOException
+     */
     public void checkAccountsCSV() throws FileNotFoundException, IOException {
-        if (accountRecordsMap.size() == 0) {
-            readAccountsCSV();
-        }
+        readAccountsCSV();
     }
 
-    // void checkUserCSV(Map<String, String> accountDetails) throws FileNotFoundException, IOException {
+    /**
+     * 
+     * @param accountDetails
+     * @return
+     * @throws FileNotFoundException
+     * @throws IOException
+     */
     public boolean checkUserCSV(Map<String, String> accountDetails) throws FileNotFoundException, IOException {
         if (userRecordsList.size() == 0) {
             return readUserCSV(accountDetails);
@@ -89,51 +87,6 @@ public class CSVFileHandler {
             }
             br.close();
         }
-    }
-
-    /**
-     * Appends account username and pin to the end of accounts.csv
-     * in csv format
-     * 
-     * @param accountDetails
-     * @throws FileNotFoundException
-     * @throws IOException
-     */
-    public void addToAccountsCSV(Map<String,String> accountDetails) throws FileNotFoundException, IOException {
-        
-        try {
-            // The true parameter will append to the file
-            fw = new FileWriter(ACCOUNTSCSV,true);
-            // Appends string to file
-            fw.write("\n"+accountDetails.get("username")+","+accountDetails.get("pin"));
-            fw.flush();
-        } catch(IOException e) {
-            System.err.println("IOException: " + e.getMessage());
-        }     
-    }
-
-    /**
-     * Removes an account username and pin from accounts.csv
-     * 
-     * @param accountDetails
-     */
-    public void removeFromAccountsCSV(Map<String,String> accountDetails) {
-        accountRecordsMap.remove(accountDetails.get("username"));
-        
-        // Write list of usernames and pins to accounts.csv
-        try {
-            fw = new FileWriter(ACCOUNTSCSV);
-            Boolean newLineFlag = false;
-            for (String key : accountRecordsMap.keySet()) {
-                if (newLineFlag) fw.write("\n");
-                fw.write(key + "," + accountRecordsMap.get(key));
-                newLineFlag = true;
-            }
-            fw.flush();
-        } catch(IOException e) {
-            System.err.println("IOException: " + e.getMessage());
-        }
-        removeFromUserCSV(accountDetails);
     }
 
     /**
@@ -175,23 +128,27 @@ public class CSVFileHandler {
      * @throws FileNotFoundException
      * @throws IOException
      */
-    public void addToUserCSV(Map<String,String> accountDetails, String[] currentTransaction) throws FileNotFoundException, IOException {
+    protected void addToUserCSV(Map<String,String> accountDetails, String[] currentTransaction) throws FileNotFoundException, IOException {
         // Gets array from userRecordsList
         String[] tempArray;
         // Location <user>.csv, which holds all transactional data for a specific user
         String userCSV = csvPath + accountDetails.get("username")+".csv";
-        
+
         if (userRecordsList.size() == 31) 
             // Removes last transaction (#30)
             userRecordsList.remove(userRecordsList.size()-1);
 
-        // Increments remaining 29 transactionIDs by 1
-        for (int i=1; i<userRecordsList.size(); i++) {
-            tempArray = userRecordsList.get(i);
-            // Increments transactionID by 1
-            tempArray[0] = Integer.toString(i+1);
-            // Sets entire array into userRecordsList
-            userRecordsList.set(i, tempArray);
+        if (userRecordsList.size() > 1) {
+            // Increments remaining 29 transactionIDs by 1
+            for (int i=1; i<userRecordsList.size(); i++) {
+                tempArray = userRecordsList.get(i);
+                // Increments transactionID by 1
+                tempArray[0] = Integer.toString(i+1);
+                // Sets entire array into userRecordsList
+                userRecordsList.set(i, tempArray);
+            }
+        } else {
+            userRecordsList.add(0, new String[]{"#transactionID","transactionType","amount","balance"});    
         }
 
         // Add at index 1 to not move comment in <user>.csv
@@ -208,7 +165,8 @@ public class CSVFileHandler {
                 for (String subkey : key) {
                     fw.write(subkey);
                     // Avoid placing a comma for the last subkey
-                    if (count != userRecordsList.get(0).length-1) {
+                    // if (count != userRecordsList.get(0).length-1) {
+                    if (count != key.length-1) {
                         fw.write(",");
                     }
                     count++;
@@ -219,83 +177,77 @@ public class CSVFileHandler {
         } catch(IOException e) {
             System.err.println("IOException: " + e.getMessage());
         }
+    }
+
+    /**
+     * Appends account username and pin to the end of accounts.csv
+     * in csv format
+     * 
+     * @param accountDetails
+     * @throws FileNotFoundException
+     * @throws IOException
+     */
+    protected void addToAccountsCSV(Map<String,String> accountDetails) throws FileNotFoundException, IOException {
         
-        /* ADDING TRANSACTIONS
-            This code is how to remove last transaction, increment remaining 29 transactionIDs by 1 and add new transaction to top of arraylist
-                ArrayList<String> cars = new ArrayList<String>();
-                cars.add("1");
-                cars.add("2");
-                cars.add("3");
-                cars.add("4");
-                cars.add("5");
-                System.out.println(cars);
-                System.out.println("Remove: "+cars.get(0));
-                cars.remove(cars.size()-1);
-                System.out.println(cars.get(0));
-                System.out.println(cars);
-                
-                for(int i=0; i<cars.size(); i++){
-                cars.set(i, Integer.toString(i+2));
-                }
-                
-                cars.add(0,"1");
-                System.out.println(cars);
-                -------------------------------------------------
+        try {
+            // The true parameter will append to the file
+            fw = new FileWriter(ACCOUNTSCSV,true);
+            // Appends string to file
+            fw.write("\n"+accountDetails.get("username")+","+accountDetails.get("pin"));
+            fw.flush();
+            createUserCSV(accountDetails);
+        } catch(IOException e) {
+            System.err.println("IOException: " + e.getMessage());
+        }     
+    }
 
+    /**
+     * Creates <user>.csv file
+     * 
+     * @param accountDetails
+     * @throws FileNotFoundException
+     * @throws IOException
+     */
+    private void createUserCSV(Map<String,String> accountDetails) throws FileNotFoundException, IOException {
+        // Location <user>.csv, which holds all transactional data for a specific user
+        String userCSV = csvPath + accountDetails.get("username")+".csv";
+        
+        try {
+            File file = new File(userCSV);
+            boolean fileCreated = file.createNewFile();
+            
+            if (fileCreated)
+                System.out.println("File created successfully");
+            else
+                System.out.println("File already exists");
+      } catch(IOException ex) {
+         System.out.println("Exception : ");
+         ex.printStackTrace();
+      }
+    }
 
-                // How to call specific values in an ArrayList of Arrays:
-                
-                // Java ArrayList of Arrays 
-                import java.io.*; 
-                import java.util.*; 
-                
-                class Main { 
-                    public static void main(String[] args) 
-                    { 
-                        // create an ArryaList of String Array type 
-                        ArrayList<String[]> list = new ArrayList<String[]>(); 
-                        String[] names = new String[4];
-                        String name1 = "A1";
-                        String name2 = "A2";
-                        String name3 = "A3";
-                        String name4 = "A4";
-                        
-                        for (int i=0; i<3; i++){
-                            String name01 = (i+1)+name1;
-                            String name02 = (i+1)+name2;
-                            String name03 = (i+1)+name3;
-                            String name04 = (i+1)+name4;
-                            String name_all = name01+","+name02+","+name03+","+name04;
-                            System.out.println(name_all);
-                            names = name_all.split(",");
-                            
-                            // create a string array called Names 
-                            // names = name_all.split(",");
-                            
-                            list.add(names);
-                        }
-                        
-                        // for (String num : names ){
-                        //     System.out.println(num);
-                        // }
-                                
-                        // add the above arrays to ArrayList Object 
-                        // list.add(names); 
-                        // names[] = { "B1", "B2", "B3", "B4" }; 
-                        // list.add(names);
-                        // names[] = { "C1", "C2", "C3", "C4" }; 
-                        // list.add(names3);
-                        
-                        // print arrays from ArrayList 
-                        for (String i[] : list) { 
-                            System.out.println(Arrays.toString(i)); 
-                        }
-                        System.out.println(list.get(1)[3]);
-                        System.out.println(list.size());
-                        
-                    } 
-                } 
-            */
+     /**
+     * Removes an account username and pin from accounts.csv
+     * 
+     * @param accountDetails
+     */
+    protected void removeFromAccountsCSV(Map<String,String> accountDetails) {
+        accountRecordsMap.remove(accountDetails.get("username"));
+        
+        // Write list of usernames and pins to accounts.csv
+        try {
+            fw = new FileWriter(ACCOUNTSCSV);
+            Boolean newLineFlag = false;
+            for (String key : accountRecordsMap.keySet()) {
+                if (newLineFlag) fw.write("\n");
+                fw.write(key + "," + accountRecordsMap.get(key));
+                newLineFlag = true;
+            }
+            fw.flush();
+        } catch(IOException e) {
+            System.err.println("IOException: " + e.getMessage());
+        }
+        removeFromUserCSV(accountDetails);
     }
 
     /**
@@ -313,5 +265,4 @@ public class CSVFileHandler {
         else
             System.out.println("Failed to delete the file");
     }
-
 }
