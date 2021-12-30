@@ -1,0 +1,10 @@
+Used the following link to install Java Connector jar file to allow MySQL Database connection:
+	https://stackoverflow.com/a/25548704
+I added this jar file to the the Visual Studio Code Explorer Windows > Java Projects > Referenced Libraries tab by hitting the + button and choosing the jar file:
+	https://www.youtube.com/watch?v=MtME-ERufu0
+The jar location was placed in the following folder on my PC:
+	C:\Program Files\MySQL\MySQL Connector J\
+		as given from here:
+			https://www.w3resource.com/mysql/mysql-java-connection.php
+Connected to Database Code got from here:
+	https://www.tutorialspoint.com/connecting-to-a-mysql-database-with-java
