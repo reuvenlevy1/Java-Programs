@@ -3,21 +3,28 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+/**
+ * 
+ * @author Reuven Levy
+ * @version 1.0
+ * @since Dec-25-2021
+ */
 public class Printer {
     private final static String TABLE_BORDER = "-";
     private final static String TABLE_BORDER_EDGE = "+";
 
     /**
-     * Prints single column table
+     * Prints single column table.
      * 
-     * @param title: A string title for the table
-     * @param columnsArr: An array of columns for the table
+     * @param title         A string title for the table
+     * @param columnsArr    An array of columns for the table
      */
     public static void print1ColTable(String title, String[] columnsArr) {
         // Get longest String in array
         int maxColLen = maxLengthString1Col(columnsArr);
+        // Find longest String length between maxColLen and title
         maxColLen = Math.max(maxColLen, title.length());
-        // Find longest String length between columns and title + 2 (needed for proper spacing)
+        // Add 2 to the maxColLen (needed for proper spacing)
         int maxDashLen = maxColLen+2;
 
         // Repeat tableBorder max length # of times
@@ -36,10 +43,10 @@ public class Printer {
     }
 
     /**
-     * Finds the maximum string length from an array of strings for 1 column table
+     * Finds the maximum string length from an array of strings for 1 column table.
      * 
-     * @param columnsArr: An array of columns for the table
-     * @return
+     * @param columnsArr    An array of columns for the table
+     * @return              <>
      */
     private static int maxLengthString1Col(String[] columnsArr) {
         int maxStringNum = 0;
@@ -51,14 +58,14 @@ public class Printer {
     }
 
     /**
-     * Prints multiple columns table
+     * Prints multiple columns table.
      * 
-     * @param transArr: A list of string arrays for each row of the table
+     * @param transArr  A list of string arrays for each row of the table
      */
     public static void printMultipleColTable(ArrayList<String[]> transArr) {
         List<String[]> myList = deepCopyListOfStrArr(transArr);
         // Find maximum length of all columns
-        int[] maxColLens = _maxLengthStringMultipleCol(myList);     //FIXME: Problem with passing list of objects as making the list final, will not make the objects final. The objects will still have references from original list, so changing the list value in 1 will change the same value in the other list 
+        int[] maxColLens = _maxLengthStringMultipleCol(myList);
         
         // Builds leftAlignFormat for each column for table output
         List<String> leftAlignFormat = new ArrayList<String>();
@@ -80,10 +87,10 @@ public class Printer {
     }
 
     /**
-     * Finds the maximum character length for a column
+     * Finds the maximum character length for a column.
      * 
-     * @param myList: A list of string arrays for each row of the table
-     * @return
+     * @param myList    A list of string arrays for each row of the table
+     * @return          <>
      */
     private static int[] _maxLengthStringMultipleCol(List<String[]> myList) {
         int numOfCols = myList.get(0).length;
@@ -106,11 +113,11 @@ public class Printer {
     }
      
     /**
-     * Prints a border around a table of multiple columns
+     * Prints a border around a table of multiple columns.
      * 
-     * @param transArr: A list of string arrays for each row of the table
-     * @param leftAlignFormat: An array of left alignment formats for each column 
-     * @param tableBorder: String that contains the border for the table
+     * @param transArr          A list of string arrays for each row of the table
+     * @param leftAlignFormat   An array of left alignment formats for each column 
+     * @param tableBorder       String that contains the border for the table
      */
     private static void _printMultipleColTable(List<String[]> transArr, List<String> leftAlignFormat, String tableBorder) {
         // Prints a border for title of table
@@ -136,8 +143,8 @@ public class Printer {
     /**
      * Makes a deep copy of the List of String arrays object
      * 
-     * @param myList: Original list of String arrays
-     * @return
+     * @param myList    Original list of String arrays
+     * @return          <>
      */
     public static List<String[]> deepCopyListOfStrArr(List<String[]> myList){
         List<String[]> newList = new ArrayList<String[]>(myList.size());

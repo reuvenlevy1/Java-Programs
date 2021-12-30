@@ -1,13 +1,17 @@
-import java.io.IOException;
-
 /**
- * Prepares data for printing
+ * The {@code DataHandler} class prepares data for printing in money format.
+ * Will also check input for valid money format {@literal #.##} or if user
+ * typed in {@literal quit}.
+ * 
+ * @author Reuven Levy
+ * @version 1.0
+ * @since Dec-25-2021
  */
 public class DataHandler {
     /**
-     * Runs methods to format String inputs for end user
+     * Runs methods to format String inputs for end user.
      * 
-     * @param myString: Input string to be formatted
+     * @param myString  Input string to be formatted
      * @return
      */
     public static String beautifier(String myString) {
@@ -23,9 +27,9 @@ public class DataHandler {
     }
 
     /**
-     * Assure String is in money format with 2 decimal places
+     * Assure String is in money format with 2 decimal places.
      * 
-     * @param myString: Input string from chosen ATM Menu option
+     * @param myString  Input string from chosen ATM Menu option
      * @return
      */
     private static String twoDecimalFormat(String myString) {
@@ -39,9 +43,9 @@ public class DataHandler {
     }
 
     /**
-     * Prefix dollar sign to money
+     * Prefix dollar sign to money.
      * 
-     * @param myString: Input string from chosen ATM Menu option
+     * @param myString  Input string from chosen ATM Menu option
      * @return
      */
     private static String addCommasToMoneyFormat(String myString) {
@@ -65,6 +69,11 @@ public class DataHandler {
             return myString;
     }
 
+    /**
+     * 
+     * @param myString
+     * @return
+     */
     private static String addDollarSign(String myString) {
         // Check if starts with, and only contains, numbers
         if (myString.matches("^[0-9].*.")) {
@@ -74,9 +83,9 @@ public class DataHandler {
     }
 
     /**
-     * Removes the comment character from a string
+     * Removes the comment character from a string.
      * 
-     * @param myString: Input string from chosen ATM Menu option data
+     * @param myString  Input string from chosen ATM Menu option data
      * @return
      */
     private static String removeCommentChar(String myString) {
@@ -88,29 +97,30 @@ public class DataHandler {
 
     /**
      * Check if user input is valid for money transactions or contains invalid
-     * characters
+     * characters.
      * 
-     * @param input: User input for expected money format
+     * @param input     User input for expected money format
      * @return
      */
     public static boolean checkValidMoneyInput(String input) {
         // Check if input is not only numbers or contains more than 2 digits after
         // decimal
-        if (!input.toLowerCase().matches("[0-9]+[.]*[0-9]*") || input.substring(input.indexOf(".") + 1).length() > 2)
+        if (!input.toLowerCase().matches("[0-9]*[.]*[0-9]*") || input.substring(input.indexOf(".") + 1).length() > 2)
             return false;
         else
             return true;
     }
 
     /**
-     * Closes csv file if exists and exits program if input is "quit"
+     * Closes database connection and exits program if input is "quit"
+     * in any letter casing.
      * 
-     * @param input User input
-     * @throws IOException
+     * @param input     User input
      */
-    public static void checkInputForQuit(String input) throws IOException {
+    public static void checkInputForQuit(String input, DatabaseHandler db) {
         if (input.toLowerCase().equals("quit")) {
             System.out.println("\n" + Messages.exitMessage() + "\n\n");
+            db.closeDBConnection();
             System.exit(0);
         }
     }

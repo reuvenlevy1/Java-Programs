@@ -1,45 +1,83 @@
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.InputMismatchException;
 import java.util.Map;
 
 /**
- * Controls the ATM options chosen by the admin
+ * The {@code AdminATMMenu} class controls the ATM options chosen by the admin.
+ * These options consist of 4 method options:
+ * <p>{@code 1. Add Account}                  Add a new user
+ * <p>{@code 2. User Transaction History}     Get a user's full transaction history
+ * <p>{@code 3. DELETE ACCOUNT}               Delete a user
+ * <p>{@code 4. Sign Out}                     Sign out of admin account
+ * 
+ * @author Reuven Levy
+ * @version 1.0
+ * @since Dec-25-2021
  */
 
 public class AdminATMMenu {
-    Database db;
     /**
-     * When the balance has been changed by either withdrawal or deposit
+     * Holds database connection information and other database
+     * related methods for executing queries.
      */
+    DatabaseHandler db;
+
+    /**
+     * Holds account methods used for verifying user input.
+     */
+    AccountsHandler ah;
+
     // ATM string options
     final static String ADD_ACCOUNT = "Add Account";
-    // final static String DELETE_ACCOUNT = "DELETE ACCOUNT";
+    final static String USER_TRANSACTION_HISTORY = "User Transaction History";
+    final static String DELETE_ACCOUNT = "DELETE ACCOUNT";
     final static String SIGN_OUT = "Sign Out";
     // ATM number options
     final static String ADD_ACCOUNT_NUM = "1";
-    // final static String DELETE_ACCOUNT_NUM = "2";
-    final static String SIGN_OUT_NUM = "2";
+    final static String USER_TRANSACTION_HISTORY_NUM = "2";
+    final static String DELETE_ACCOUNT_NUM = "3";
+    final static String SIGN_OUT_NUM = "4";
     // Other keywords
     final static String BACK = "Back";
     final static String QUIT = "Quit";
+    /**
+     * A list of all admin ATM menu options.
+     */
+    final static String[] adminATMMenuOptions = new String[] {        //FIXME - Add options here when created
+        ADD_ACCOUNT_NUM + ". " + ADD_ACCOUNT,
+        USER_TRANSACTION_HISTORY_NUM + ". " + USER_TRANSACTION_HISTORY,
+        DELETE_ACCOUNT_NUM + ". " + DELETE_ACCOUNT,
+        SIGN_OUT_NUM + ". " + SIGN_OUT};
 
+    /**
+     * Determines if an account has been added.
+     */
     static boolean accountAdded = false;
 
-    AdminATMMenu(Map<String, String> accountDetails, Database db) throws FileNotFoundException, IOException {
+    /**
+     * Constructor that runs admin ATM menu options.
+     * 
+     * @param accountDetails    {@code Map} that holds username and pin:
+     *                          <p>{@code accountDetails["username"]}
+     *                          <p>{@code accountDetails["pin"]}
+     * @param db                Holds database connection information and other database
+     *                          related methods for executing queries.
+     */
+    AdminATMMenu(Map<String, String> accountDetails, DatabaseHandler db, AccountsHandler ah) {
         this.db = db;
+        this.ah = ah;
 
         while (true) {
-            Messages.adminATMMenuMessage();
+            Messages.adminATMMenuMessage(adminATMMenuOptions);
 
             try {
                 String selection = Main.userInput.nextLine().toLowerCase().trim();
                 // check user input
-                DataHandler.checkInputForQuit(selection);
+                DataHandler.checkInputForQuit(selection, db);
 
                 if (selection.equals(ADD_ACCOUNT_NUM) || selection.equals(ADD_ACCOUNT)) {
-                    System.out.print(ADD_ACCOUNT.toUpperCase() + "\n" + Messages.returnToATMMenuMessage() + "\n");
+                    System.out.print(ADD_ACCOUNT.toUpperCase() + "\n"
+                        + Messages.returnToATMMenuMessage() + "\n");
                     boolean validRequirements = false;
                     boolean notDuplicate = false;
                     Map<String, String> newAccountDetails = new HashMap<>();
@@ -51,45 +89,60 @@ public class AdminATMMenu {
                         System.out.print(Messages.adminCreateUsernameMessage());
                         String username = Main.userInput.nextLine().trim();
                         // Check user input
-                        DataHandler.checkInputForQuit(username);
+                        DataHandler.checkInputForQuit(username, db);
                         if (username.toLowerCase().equals(BACK.toLowerCase()))
                             break;
                         System.out.print(Messages.adminCreatePINMessage());
                         String pin = Main.userInput.nextLine().trim();
                         // Check user input
-                        DataHandler.checkInputForQuit(pin);
+                        DataHandler.checkInputForQuit(pin, db);
                         if (username.toLowerCase().equals(BACK.toLowerCase()))
                             break;
 
                         newAccountDetails.put("username", username);
                         newAccountDetails.put("pin", pin);
 
-                        // Check username and PIN requirement
-                        if (checkRequirements(username, pin)) {
+                        // Map of errors for account details requirement checking
+                        Map<String, Boolean> errorMap = new HashMap<>();
+                        errorMap = ah.checkUserRequirements(username, pin);
+
+                        // Check username and PIN requirements
+                        if (errorMap.get("noErrors")) {
                             validRequirements = true;
                             // Check if username is a duplicate
-                            if (!checkDupUsers(username))        //FIXME
+                            if (!db.checkDupUsers(username))
                                 notDuplicate = true;
                             else
-                                System.out.println(Messages.accountCheckDuplicateUserErrorMessage());
+                                System.out.println(
+                                    Messages.accountCheckDuplicateUserErrorMessage());
                         } else
-                            System.out.println(Messages.accountCheckRequirementsErrorMessage() + "\n");
+                            System.out.println(Messages.accountCheckRequirementsErrorMessage(
+                                errorMap, AccountsHandler.MIN_USERNAME_LEN,
+                                AccountsHandler.MAX_USERNAME_LEN, AccountsHandler.REQUIRED_PIN_LEN)
+                                + "\n");
                     }
 
                     if (validRequirements && notDuplicate) {
                         // Add new user to accounts.csv and create their own table
-                        db.createUser(newAccountDetails.get("username"), newAccountDetails.get("pin"));
+                        db.createUser(newAccountDetails.get("username"),
+                            newAccountDetails.get("pin"));
 
                         // CSVFileHandler.csvOpen = true;
                         accountAdded = true;
                         System.out.println();
                         System.out.println(
-                                Messages.adminAccountCreatedMessage() + "\n\n" + Messages.exitMessage() + "\n\n");
+                                Messages.adminAccountCreatedMessage() + "\n\n"
+                                + Messages.exitMessage() + "\n\n");
                         break;
                     }
-                    // } else if (selection.equals(DELETE_ACCOUNT_NUM) ||
-                    // selection.toLowerCase().equals(DELETE_ACCOUNT)) {
-                    // //DELETE ACCOUNT
+                } else if (selection.equals(USER_TRANSACTION_HISTORY_NUM) || selection.equals(
+                    USER_TRANSACTION_HISTORY)) {                      //FIXME
+
+                    // Change everything in here to match new method information
+                    // SIGN OUT from account
+                    // System.out.println(SIGN_OUT.toUpperCase() + "\n" + Messages.signOutMessage() + "\n");
+                    // break;
+                } else if (selection.equals(DELETE_ACCOUNT_NUM) || selection.toLowerCase().equals(DELETE_ACCOUNT)) {
                     // // Bring you to a confirmation page that will require you to type in your
                     // username to delete
                     // // Gives a successfully deleted account message
@@ -111,7 +164,8 @@ public class AdminATMMenu {
                     // break;
                 } else if (selection.equals(SIGN_OUT_NUM) || selection.equals(SIGN_OUT)) {
                     // SIGN OUT from account
-                    System.out.println(SIGN_OUT.toUpperCase() + "\n" + Messages.signOutMessage() + "\n");
+                    System.out.println(SIGN_OUT.toUpperCase() + "\n" + Messages.signOutMessage()
+                        + "\n");
                     break;
                 } else {
                     // Error message
@@ -121,60 +175,6 @@ public class AdminATMMenu {
                 System.out.println(Messages.atmMenuInvalidChoiceMessage());
                 Main.userInput.nextLine();
             }
-        }
-    }
-
-    /**
-     * 
-     * @param username
-     * @param pin
-     * @return
-     */
-    private boolean checkRequirements(String username, String pin) {
-        // Check if username contains invalid characters
-        char[] usernameInvalidCharsList = "!@#$%^&*()-_=+`~\\|[];:'\",./?".toCharArray();
-        for (char invalidChar : usernameInvalidCharsList) {
-            if (username.contains(Character.toString(invalidChar)))
-                return false;
-        }
-
-        // Check if pin contains invalid characters
-        char[] pinInvalidCharsList = "abcdefghijklmnopqrstuvwxyz!@#$%^&*()-_=+`~\\|[];:'\",./?".toCharArray();
-        for (char invalidChar : pinInvalidCharsList) {
-            if (pin.contains(Character.toString(invalidChar)))
-                return false;
-        }
-
-        // Check if username is over 16 characters
-        if (username.length() > 16) {
-            return false;
-        }
-
-        // Check if PIN is not equal to 6 digits
-        if (pin.length() != 6) {
-            return false;
-        }
-
-        // Add more requirements in here
-        return true;
-    }
-
-    /**
-     * Checks if username already exists in accounts.csv
-     * 
-     * @param username
-     * @param csv
-     * @return
-     */
-    private boolean checkDupUsers(String username) {
-        try {
-            // csv.accountRecordsMap.get(username);
-            if(db.isDupUsername(username))                     //FIXME
-                return true;
-            else
-                return false;
-        } catch (NullPointerException e) {
-            return false;
         }
     }
 }
