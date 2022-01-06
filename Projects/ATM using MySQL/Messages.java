@@ -206,7 +206,7 @@ public class Messages {
      * 
      * @return
      */
-    public static String changePINConfirmationMessage() {       //FIXME - finish implementing into ATMMenu.java
+    public static String changePINConfirmationMessage() {
         return "Please type in your current PIN to confirm changing it: ";
     }
 
@@ -215,8 +215,12 @@ public class Messages {
      * 
      * @return
      */
-    public static String changePINConfirmFailMessage() {       //FIXME - finish implementing into ATMMenu.java
+    public static String changePINConfirmFailMessage() {
         return "PIN was mistyped, account PIN change was aborted.";
+    }
+
+    public static String changePINToNewPINMessage() {       //FIXME - finish implementing into ATMMenu.java
+        return "Please type in your new PIN now: ";
     }
 
     /**
@@ -224,7 +228,7 @@ public class Messages {
      * 
      * @return
      */
-    public static String changePINSuccessMessage() {       //FIXME - finish implementing into ATMMenu.java
+    public static String changePINSuccessMessage() {
         return "Your PIN has successfully been changed.";
     }
 
@@ -233,7 +237,7 @@ public class Messages {
      * 
      * @return
      */
-    public static String changePINErrorMessage() {       //FIXME - finish implementing into ATMMenu.java
+    public static String changePINErrorMessage() {
         return "Your PIN could not be successfully changed at this time. Please try again.";
     }
 

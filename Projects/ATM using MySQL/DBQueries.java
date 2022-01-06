@@ -131,4 +131,12 @@ public class DBQueries {
     public static String deleteUserTableQuery(String username) {
         return "DROP TABLE " + username + ";";
     }
+
+    public static String changeUserPINQuery(String username, String newPin, String accountTable) {
+        return "UPDATE " + accountTable + " SET pin=" + newPin + " WHERE username='" + username + "';";
+    }
+
+    public static String listUsernamesQuery(String accountTable) {
+        return "SELECT username FROM " + accountTable;
+    }
 }

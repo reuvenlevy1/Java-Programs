@@ -31,7 +31,6 @@ public class Main {
             // SignIn signIn = new SignIn(csv);
             SignIn signIn = new SignIn(db);
             
-            //FIXME - Add the ability for users to change their PINS
             //FIXME - Add the ability for admin to view all list of users and to reset their PINS
             //FIXME - Add Admin feature to be able to delete account: include all accounts, have confirming deletion of account just
                 //like in ATMMenu.java

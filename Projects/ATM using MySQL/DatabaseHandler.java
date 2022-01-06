@@ -25,7 +25,7 @@ public class DatabaseHandler {
     /**
      * Table name for accounts.
      */
-    final static String ACCOUNT_TABLE = "account";      //FIXME
+    final static String ACCOUNT_TABLE = "account";
     
     // New user details
     /**
@@ -290,6 +290,36 @@ public class DatabaseHandler {
             Logger logger = Logger.getLogger(AccountsHandler.class.getName());
             logger.log(Level.SEVERE, ex.getMessage(), ex);
             return false;
+        }
+    }
+    
+    public boolean changeUserPIN(String username, String pin) {
+        String query = DBQueries.changeUserPINQuery(username, pin, ACCOUNT_TABLE);
+        // Run query
+        try {
+            statement.executeUpdate(query);
+            return true;
+        } catch (SQLException ex) {
+            Logger logger = Logger.getLogger(AccountsHandler.class.getName());
+            logger.log(Level.SEVERE, ex.getMessage(), ex);
+            return false;
+        }
+    }
+
+    /**
+     * 
+     */
+    public void listUsernames() {
+        String query = DBQueries.listUsernamesQuery(ACCOUNT_TABLE);
+        // Run query and take results if exists
+        try {
+            ResultSet resultset = statement.executeQuery(query);
+            // Get usernames data
+            while (resultset.next())
+                System.out.println(resultset.getString(1));
+        } catch (SQLException ex) {
+            Logger logger = Logger.getLogger(AccountsHandler.class.getName());
+            logger.log(Level.SEVERE, ex.getMessage(), ex);
         }
     }
 

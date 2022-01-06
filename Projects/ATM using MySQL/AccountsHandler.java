@@ -76,21 +76,9 @@ public class AccountsHandler {
      * 
      * @param username  Username input from the user
      * @param pin       PIN inputted from the user
-     * @return          {@code true} if username and PIN meet requirements
+     * @return          Map of {@code true} values if username and PIN meets requirements
      */
-    public Map<String, Boolean> checkUserRequirements(String username, String pin) {
-        return checkRequirements(username, pin);
-    }
-    
-    /**
-     * Private method that checks {@code username} and {@code pin} for both invalid
-     * characters and invalid character lengths.
-     * 
-     * @param username  Username input from the user
-     * @param pin       PIN inputted from the user
-     * @return          {@code true} if username and PIN meet requirements
-     */
-    private Map<String, Boolean> checkRequirements(String username, String pin) {        
+    public Map<String, Boolean> checkAccountRequirements(String username, String pin) {
         // Set map keys to default values
         errorMap = new HashMap<>() {{
             put("noErrors", true);
@@ -101,7 +89,40 @@ public class AccountsHandler {
             put("pinInvalidChar", false);
             put("pinNotReqLen", false);
         }};
+        checkUserRequirements(username);
+        checkPINRequirements(pin);
+        
+        return errorMap;
+    }
 
+    /**
+     * Checks {@code pin} for invalid characters and invalid
+     * charcter lengths.
+     * 
+     * @param pin       PIN inputted from the user
+     * @return          Map of {@code true} values if PIN meets requirements
+     */
+    public Map<String, Boolean> checkAccountRequirements(String pin) {
+        // Set map keys to default values
+        errorMap = new HashMap<>() {{
+            put("noErrors", true);
+            put("usernameInvalidChar", false);
+            put("usernameFirstCharNotLetter", false);
+            put("usernameUnderMinLen", false);
+            put("usernameOverMaxLen", false);
+            put("pinInvalidChar", false);
+            put("pinNotReqLen", false);
+        }};
+        checkPINRequirements(pin);
+
+        return errorMap;
+    }
+    
+    /**
+     * Private method that checks {@code username} for both invalid characters
+     * and invalid character lengths.
+     */
+    private void checkUserRequirements(String username) {
         // Check if username contains invalid characters
         char[] usernameInvalidCharsList = "!@#$%^&*()-_=+`~\\|[];:'\",./?".toCharArray();
         for (char invalidChar : usernameInvalidCharsList) {
@@ -129,7 +150,14 @@ public class AccountsHandler {
             errorMap.replace("usernameOverMaxLen", true);
             errorMap.replace("noErrors", false);
         }
-
+    }
+    
+    
+    /**
+     * Private method that checks {@code pin} for both invalid characters
+     * and invalid character lengths.
+     */
+    private void checkPINRequirements(String pin) {
         // Check if pin contains invalid characters
         char[] pinInvalidCharsList = "abcdefghijklmnopqrstuvwxyz!@#$%^&*()-_=+`~\\|[];:'\",./?".toCharArray();
         for (char invalidChar : pinInvalidCharsList) {
@@ -145,8 +173,6 @@ public class AccountsHandler {
             errorMap.replace("pinNotReqLen", true);
             errorMap.replace("noErrors", false);
         }
-
-        return errorMap;
     }
 
     /**

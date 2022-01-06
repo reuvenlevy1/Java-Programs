@@ -28,10 +28,11 @@ public class ATMDataHandler {
     private double withdrawFromAccount(double amount, double balance) {
         if (amount >= 0.01) {
             if (amount <= balance) {
-                balance -= amount;
+                return balance -= amount;
             } else
-                System.out.println(Messages.withdrawExceededErrorMessage(DataHandler.beautifier(Double.toString(amount)),
-                        DataHandler.beautifier(Double.toString(balance))));
+                System.out.println(Messages.withdrawExceededErrorMessage(
+                    DataHandler.beautifier(Double.toString(amount)),
+                    DataHandler.beautifier(Double.toString(balance))));
         } else
             System.out.println(Messages.withdrawZeroErrorMessage());
         return -1;
@@ -57,7 +58,7 @@ public class ATMDataHandler {
      */
     private double depositToAccount(double amount, double balance) {
         if (amount >= 0.01) {
-            balance += amount;
+            return balance += amount;
         } else {
             System.out.println(Messages.depositZeroErrorMessage());
         }

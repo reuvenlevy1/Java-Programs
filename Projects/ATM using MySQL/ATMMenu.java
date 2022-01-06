@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.InputMismatchException;
 import java.util.Map;
 
@@ -87,7 +88,7 @@ public class ATMMenu {
      * @param db                Holds database connection information and other database
      *                          related methods for executing queries.
      */
-    ATMMenu(Map<String, String> accountDetails, DatabaseHandler db) {
+    ATMMenu(Map<String, String> accountDetails, DatabaseHandler db, AccountsHandler ah) {
         this.db = db;
         int transactionID=1;
         // ATM Transaction menu selection name
@@ -116,6 +117,7 @@ public class ATMMenu {
                     // Compare data to being greater than 1
                     if (userBalance.length() > 1) {
                         balance = Double.parseDouble(userBalance);
+                        
                         if (balance > 0) {
                             System.out.println(Messages.currentBalanceMessage(
                                 DataHandler.beautifier(balance.toString())));
@@ -123,21 +125,21 @@ public class ATMMenu {
                             while (!modifyBalance_flag) {
                                 System.out.print(Messages.withdrawAmountMessage());
                                 String s_amount = Main.userInput.nextLine().trim();
+                                
                                 // Check user input
                                 if (s_amount.toLowerCase().equals(BACK.toLowerCase()))
                                     break;
                                 DataHandler.checkInputForQuit(s_amount, db);
                                 
-                                if (!DataHandler.checkValidMoneyInput(s_amount))
-                                    System.out.println(Messages.invalidTransactionInputMessage());
-                                else {
+                                if (DataHandler.checkValidMoneyInput(s_amount)) {
                                     // Set user values
                                     amount = Double.parseDouble(s_amount);
                                     balance = atmDH.withdraw(amount, balance);
                                     // balance was successfully changed
                                     if (balance >= 0)
                                         modifyBalance_flag = true;
-                                }
+                                } else
+                                    System.out.println(Messages.invalidTransactionInputMessage());
                             }
                         } else
                             System.out.println(Messages.withdrawNewAccountMessage());
@@ -150,6 +152,7 @@ public class ATMMenu {
 
                     // Use query to pull latest user transaction data
                     String userBalance = db.getLatestUserBalance(accountDetails.get("username"));
+                    
                     // Compare data to being greater than 1
                     if (userBalance.length() > 1) {
                         balance = Double.parseDouble(userBalance);
@@ -158,6 +161,7 @@ public class ATMMenu {
                         while (!modifyBalance_flag) {
                             System.out.print(Messages.depositAmountMessage());
                             String s_amount = Main.userInput.nextLine().trim();
+                            
                             // Check user input
                             if (s_amount.toLowerCase().equals(BACK.toLowerCase()))
                                 break;
@@ -190,8 +194,7 @@ public class ATMMenu {
                         db.getUserTransactionHistory(accountDetails.get("username"), MAX_TRANS_NUM);
                     // Print transaction history starting with most recent
                     Messages.transactionHistoryMessage(userTransHistory);
-                    System.out.print("\n");
-                    System.out.println(Messages.exitMessage() + "\n\n");
+                    System.out.println("\n" + Messages.exitMessage() + "\n\n");
                     break;
                 } else if (selection.equals(ACCOUNT_STATS_NUM) || selection.equals(ACCOUNT_STATS)) {
                     System.out.print(ACCOUNT_STATS.toUpperCase() + "\n" + Messages.returnToATMMenuMessage() + "\n");
@@ -200,36 +203,51 @@ public class ATMMenu {
                     break;
                 } else if (selection.equals(CHANGE_PIN_NUM) || selection.equals(CHANGE_PIN)) {      //FIXME - Finish implementing
                     System.out.print(CHANGE_PIN.toUpperCase() + "\n" + Messages.returnToATMMenuMessage() + "\n");
-                    
-                    
-                    //--------------------------------------
-                    System.out.println(Messages.accountDeleteConfirmationMessage());
+                    System.out.println(Messages.changePINConfirmationMessage());
                     String confirmUserInput = Main.userInput.nextLine().trim();
+                    
                     // Check user input
                     if (confirmUserInput.toLowerCase().equals(BACK.toLowerCase()))
                         break;
                     DataHandler.checkInputForQuit(confirmUserInput, db);
 
                     // Checks if username matches confirmation user input
-                    if (confirmUserInput.toLowerCase().equals(accountDetails.get("username").toLowerCase())) {
-                        // boolean on the status of the account being deleted
-                        if (db.deleteUserAccount(accountDetails.get("username")))
-                            System.out.println(Messages.accountDeletedMessage(accountDetails.get("username")));
-                        else
-                            System.out.println(Messages.accountDeletionErrorMessage(accountDetails.get("username")));
-                    } else {
-                        System.out.println(Messages.accountDeleteConfirmFailMessage());
-                    }
-                    System.out.println(Messages.exitMessage());
+                    if (confirmUserInput.equals(accountDetails.get("pin"))) {
+                        while (true) {
+                            // Get new PIN
+                            System.out.println(Messages.changePINToNewPINMessage());
+                            String newPIN = Main.userInput.nextLine().trim();
+                            // Map of errors for account details requirement checking
+                            Map<String, Boolean> errorMap = new HashMap<>();
+                            errorMap = ah.checkAccountRequirements(newPIN);
+                            
+                            // Check if PIN requirements contained no errors
+                            if (errorMap.get("noErrors")) {
+                                // boolean on the status of the account being deleted
+                                if (db.changeUserPIN(accountDetails.get("username"), newPIN)) {
+                                    System.out.println("\n" + Messages.changePINSuccessMessage());
+                                    break;
+                                } else
+                                    // Error message
+                                    System.out.println(Messages.changePINErrorMessage());
+                            } else {
+                                // Error message that lists requirement errors
+                                System.out.println(Messages.accountCheckRequirementsErrorMessage(errorMap,
+                                AccountsHandler.MIN_USERNAME_LEN, AccountsHandler.MAX_USERNAME_LEN,
+                                AccountsHandler.REQUIRED_PIN_LEN) + "\n");
+                            }
+                        }
+                    } else
+                        // Error message
+                        System.out.println(Messages.changePINConfirmFailMessage());
+                    System.out.println("\n" + Messages.exitMessage() + "\n\n");
                     break;
-                    //--------------------------------------
-
-
                 } else if (selection.equals(DELETE_ACCOUNT_NUM) || selection.equals(DELETE_ACCOUNT)) {
                     System.out.print(DELETE_ACCOUNT.toUpperCase() + "\n" + Messages.returnToATMMenuMessage() + "\n");
                     // Confirm account deletion
                     System.out.print(Messages.accountDeleteConfirmationMessage());
                     String confirmUserInput = Main.userInput.nextLine().trim();
+                    
                     // Check user input
                     if (confirmUserInput.toLowerCase().equals(BACK.toLowerCase()))
                         break;
@@ -241,20 +259,20 @@ public class ATMMenu {
                         if (db.deleteUserAccount(accountDetails.get("username")))
                             System.out.println(Messages.accountDeletedMessage(accountDetails.get("username")));
                         else
+                            // Error message
                             System.out.println(Messages.accountDeletionErrorMessage(accountDetails.get("username")));
-                    } else {
+                    } else
+                        // Error message
                         System.out.println(Messages.accountDeleteConfirmFailMessage());
-                    }
-                    System.out.println(Messages.exitMessage());
+                    System.out.println("\n" + Messages.exitMessage() + "\n\n");
                     break;
                 } else if (selection.equals(SIGN_OUT_NUM) || selection.equals(SIGN_OUT)) {
                     // SIGN OUT from account
                     System.out.println(SIGN_OUT.toUpperCase() + "\n" + Messages.signOutMessage() + "\n");
                     break;
-                } else {
+                } else
                     // Error message
                     System.out.println(Messages.atmMenuInvalidChoiceMessage());
-                }
             } catch (InputMismatchException e) {
                 System.out.println(Messages.atmMenuInvalidChoiceMessage());
                 Main.userInput.nextLine().trim();

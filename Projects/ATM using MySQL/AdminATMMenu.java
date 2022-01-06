@@ -7,8 +7,9 @@ import java.util.Map;
  * These options consist of 4 method options:
  * <p>{@code 1. Add Account}                  Add a new user
  * <p>{@code 2. User Transaction History}     Get a user's full transaction history
- * <p>{@code 3. DELETE ACCOUNT}               Delete a user
- * <p>{@code 4. Sign Out}                     Sign out of admin account
+ * <p>{@code 3. Change User PIN}              Change a user's PIN from a list of users     //FIXME: adding
+ * <p>{@code 4. DELETE ACCOUNT}               Delete a user
+ * <p>{@code 5. Sign Out}                     Sign out of admin account
  * 
  * @author Reuven Levy
  * @version 1.0
@@ -30,13 +31,15 @@ public class AdminATMMenu {
     // ATM string options
     final static String ADD_ACCOUNT = "Add Account";
     final static String USER_TRANSACTION_HISTORY = "User Transaction History";
+    final static String CHANGE_USER_PIN = "Change User PIN";
     final static String DELETE_ACCOUNT = "DELETE ACCOUNT";
     final static String SIGN_OUT = "Sign Out";
     // ATM number options
     final static String ADD_ACCOUNT_NUM = "1";
     final static String USER_TRANSACTION_HISTORY_NUM = "2";
-    final static String DELETE_ACCOUNT_NUM = "3";
-    final static String SIGN_OUT_NUM = "4";
+    final static String CHANGE_USER_PIN_NUM = "3";
+    final static String DELETE_ACCOUNT_NUM = "4";
+    final static String SIGN_OUT_NUM = "5";
     // Other keywords
     final static String BACK = "Back";
     final static String QUIT = "Quit";
@@ -90,12 +93,14 @@ public class AdminATMMenu {
                         String username = Main.userInput.nextLine().trim();
                         // Check user input
                         DataHandler.checkInputForQuit(username, db);
+                        
                         if (username.toLowerCase().equals(BACK.toLowerCase()))
                             break;
                         System.out.print(Messages.adminCreatePINMessage());
                         String pin = Main.userInput.nextLine().trim();
                         // Check user input
                         DataHandler.checkInputForQuit(pin, db);
+                        
                         if (username.toLowerCase().equals(BACK.toLowerCase()))
                             break;
 
@@ -104,11 +109,12 @@ public class AdminATMMenu {
 
                         // Map of errors for account details requirement checking
                         Map<String, Boolean> errorMap = new HashMap<>();
-                        errorMap = ah.checkUserRequirements(username, pin);
+                        errorMap = ah.checkAccountRequirements(username, pin);
 
                         // Check username and PIN requirements
                         if (errorMap.get("noErrors")) {
                             validRequirements = true;
+                            
                             // Check if username is a duplicate
                             if (!db.checkDupUsers(username))
                                 notDuplicate = true;
@@ -131,7 +137,7 @@ public class AdminATMMenu {
                         accountAdded = true;
                         System.out.println();
                         System.out.println(
-                                Messages.adminAccountCreatedMessage() + "\n\n"
+                                Messages.adminAccountCreatedMessage() + "\n"
                                 + Messages.exitMessage() + "\n\n");
                         break;
                     }
@@ -142,25 +148,37 @@ public class AdminATMMenu {
                     // SIGN OUT from account
                     // System.out.println(SIGN_OUT.toUpperCase() + "\n" + Messages.signOutMessage() + "\n");
                     // break;
+                } else if (selection.equals(CHANGE_USER_PIN_NUM) || selection.toLowerCase().equals(CHANGE_USER_PIN)) {
+                    // FIXME: Finish implementation
+                    // List all available usernames
+                    db.listUsernames();
                 } else if (selection.equals(DELETE_ACCOUNT_NUM) || selection.toLowerCase().equals(DELETE_ACCOUNT)) {
-                    // // Bring you to a confirmation page that will require you to type in your
-                    // username to delete
-                    // // Gives a successfully deleted account message
-                    // System.out.print(DELETE_ACCOUNT.toUpperCase()+"\n"+Messages.returnToATMMenu()+"\n");
-                    // System.out.println(Messages.accountDeleteConfirmationMessage());
-                    // String confirmUserInput = Main.userInput.nextLine();
+                    System.out.print(DELETE_ACCOUNT.toUpperCase() + "\n" + Messages.returnToATMMenuMessage() + "\n");
+                    // FIXME: Finish implementation
+                    // List all available usernames
+                    db.listUsernames();
+
+                    // Confirm account deletion
+                    System.out.print(Messages.accountDeleteConfirmationMessage());  //FIXME: Add a new message for choosing a username to delete
+                    // String confirmUserInput = Main.userInput.nextLine().trim();
+                    
                     // // Check user input
-                    // if (confirmUserInput.toLowerCase().equals(BACK.toLowerCase())) break;
-                    // DataHandler.checkAdminInputForQuit(confirmUserInput, csv, csvOpen);
+                    // if (confirmUserInput.toLowerCase().equals(BACK.toLowerCase()))
+                    //     break;
+                    // DataHandler.checkInputForQuit(confirmUserInput, db);
 
                     // // Checks if username matches confirmation user input
-                    // if (confirmUserInput.equals(accountDetails.get("username"))) {
-                    // csv.removeFromAccountsCSV(accountDetails);
-                    // System.out.println(Messages.accountDeletedMessage(accountDetails));
-                    // } else {
-                    // System.out.println(Messages.accountDeleteConfirmFailMessage());
-                    // }
-                    // System.out.println(Messages.exitMessage());
+                    // if (confirmUserInput.toLowerCase().equals(accountDetails.get("username").toLowerCase())) {
+                    //     // boolean on the status of the account being deleted
+                    //     if (db.deleteUserAccount(accountDetails.get("username")))
+                    //         System.out.println(Messages.accountDeletedMessage(accountDetails.get("username")));
+                    //     else
+                    //         // Error message
+                    //         System.out.println(Messages.accountDeletionErrorMessage(accountDetails.get("username")));
+                    // } else
+                    //     // Error message
+                    //     System.out.println(Messages.accountDeleteConfirmFailMessage());
+                    // System.out.println("\n" + Messages.exitMessage() + "\n\n");
                     // break;
                 } else if (selection.equals(SIGN_OUT_NUM) || selection.equals(SIGN_OUT)) {
                     // SIGN OUT from account

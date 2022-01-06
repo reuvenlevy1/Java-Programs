@@ -74,7 +74,7 @@ public class SignIn {
 
             // Map of errors for account details requirement checking
             Map<String, Boolean> errorMap = new HashMap<>();
-            errorMap = ah.checkUserRequirements(username, pin);
+            errorMap = ah.checkAccountRequirements(username, pin);
 
             // Check if username and PIN requirements contained no errors
             if (errorMap.get("noErrors")) {
@@ -93,7 +93,7 @@ public class SignIn {
         // Call to read readUserCSV file for validated user
         else {           // FIXME: Figure out how to work for users
             // Send to ATMMenu page for valid account
-            ATMMenu atm = new ATMMenu(accountDetails, db);
+            ATMMenu atm = new ATMMenu(accountDetails, db, ah);
         }
     }
 }
