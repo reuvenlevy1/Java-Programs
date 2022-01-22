@@ -2,7 +2,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * The {@code AccountsCheck} class handles information related to user
+ * The {@code AccountsHandler} class handles information related to user
  * login/creation validation requirements and verification of account details.
  * 
  * @author Reuven Levy
@@ -29,17 +29,17 @@ public class AccountsHandler {
     /**
      * Minimum number of characters for username.
      */
-    final static int MIN_USERNAME_LEN = 4;
+    final static int MIN_USERNAME_LEN = Integer.parseInt(ReadINIFile.MIN_USERNAME_LEN);
 
     /**
      * Maximum number of characters for username.
      */
-    final static int MAX_USERNAME_LEN = 16;
+    final static int MAX_USERNAME_LEN = Integer.parseInt(ReadINIFile.MAX_USERNAME_LEN);;
 
     /**
      * Required number of digits for pin.
      */
-    final static int REQUIRED_PIN_LEN = 6;
+    final static int REQUIRED_PIN_LEN = Integer.parseInt(ReadINIFile.REQUIRED_PIN_LEN);;
 
     /**
      * Map of errors for account details requirement checking. Keys and values are set in
@@ -63,8 +63,8 @@ public class AccountsHandler {
     /**
      * Constructor that sets the {@code db} object.
      * 
-     * @param db    Holds database connection information and other database
-     *              related methods for executing queries.
+     * @param db        Holds database connection information and other database
+     *                  related methods for executing queries.
      */
     public AccountsHandler(DatabaseHandler db) {
         this.db = db;
@@ -74,9 +74,9 @@ public class AccountsHandler {
      * Checks {@code username} and {@code pin} for invalid characters and invalid
      * charcter lengths.
      * 
-     * @param username  Username input from the user
-     * @param pin       PIN inputted from the user
-     * @return          Map of {@code true} values if username and PIN meets requirements
+     * @param username      Username input from the user
+     * @param pin           PIN inputted from the user
+     * @return              Map of {@code true} values if username and PIN meets requirements
      */
     public Map<String, Boolean> checkAccountRequirements(String username, String pin) {
         // Set map keys to default values
@@ -89,38 +89,20 @@ public class AccountsHandler {
             put("pinInvalidChar", false);
             put("pinNotReqLen", false);
         }};
-        checkUserRequirements(username);
-        checkPINRequirements(pin);
+
+        if (username != null)
+            checkUserRequirements(username);
+        if (pin != null)
+            checkPINRequirements(pin);
         
-        return errorMap;
-    }
-
-    /**
-     * Checks {@code pin} for invalid characters and invalid
-     * charcter lengths.
-     * 
-     * @param pin       PIN inputted from the user
-     * @return          Map of {@code true} values if PIN meets requirements
-     */
-    public Map<String, Boolean> checkAccountRequirements(String pin) {
-        // Set map keys to default values
-        errorMap = new HashMap<>() {{
-            put("noErrors", true);
-            put("usernameInvalidChar", false);
-            put("usernameFirstCharNotLetter", false);
-            put("usernameUnderMinLen", false);
-            put("usernameOverMaxLen", false);
-            put("pinInvalidChar", false);
-            put("pinNotReqLen", false);
-        }};
-        checkPINRequirements(pin);
-
         return errorMap;
     }
     
     /**
      * Private method that checks {@code username} for both invalid characters
      * and invalid character lengths.
+     * 
+     * @param username      Username input from the user
      */
     private void checkUserRequirements(String username) {
         // Check if username contains invalid characters
@@ -152,10 +134,11 @@ public class AccountsHandler {
         }
     }
     
-    
     /**
      * Private method that checks {@code pin} for both invalid characters
      * and invalid character lengths.
+     * 
+     * @param pin
      */
     private void checkPINRequirements(String pin) {
         // Check if pin contains invalid characters
@@ -190,7 +173,25 @@ public class AccountsHandler {
             System.out.println("\n" + Messages.adminAccountValidMessage());
             return true;
         }
-        if (db.verifyUser(accountDetails)) { // FIXME: I left off here inside verifyUser()
+        if (db.verifyAccount(accountDetails)) { // FIXME: I left off here inside verifyUser()
+            System.out.println("\n" + Messages.accountValidMessage());
+            System.out.println(Messages.returnToATMMenuMessage());
+            return true;
+        } else {
+            System.out.println(Messages.accountErrorMessage());
+            return false;
+        }
+    }
+
+    /**
+     * Checks username details to see if they have an existing user account.
+     * 
+     * @param username          Username input from the user
+     * @return                  {@code true} if {@code accountDetails} match
+     *                          an existing account.
+     */
+    public boolean validUsername(String username) {
+        if (db.verifyUser(username)) { // FIXME: I left off here inside verifyUser()
             System.out.println("\n" + Messages.accountValidMessage());
             System.out.println(Messages.returnToATMMenuMessage());
             return true;

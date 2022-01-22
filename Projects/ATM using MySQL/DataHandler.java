@@ -105,10 +105,63 @@ public class DataHandler {
     public static boolean checkValidMoneyInput(String input) {
         // Check if input is not only numbers or contains more than 2 digits after
         // decimal
-        if (!input.toLowerCase().matches("[0-9]*[.]*[0-9]*") || input.substring(input.indexOf(".") + 1).length() > 2)
+        if (!input.toLowerCase().matches("[0-9]*[.]*[0-9]*"))
             return false;
-        else
+        else if (input.contains("."))
+            if ( input.substring(input.indexOf(".") + 1).length() > 2)
+                return false;
+        return true;
+    }
+
+    public static boolean checkNumRequirements(String num) {
+        // Check if num contains invalid characters
+        char[] pinInvalidCharsList = "abcdefghijklmnopqrstuvwxyz!@#$%^&*()-_=+`~\\|[];:'\",./?".toCharArray();
+        for (char invalidChar : pinInvalidCharsList) {
+            if (num.contains(Character.toString(invalidChar)))
+                return false;
+        }
+        return true;
+    }
+
+    /**
+     * Check the user input for the following:
+     * <blockquote><pre>
+     *      <p>If the input is empty, display an error message</p>
+     *      <p>If the user typed "quit", display closing message end the program</p>
+     * </pre></blockquote>
+     * 
+     * @param input     User input
+     * @param db        Holds database connection information
+     * @return          <p>{@code true} if {@code input} is not empty</p>
+     *                  <p>{@code false} if {@code input} is empty</p>
+     */
+    public static boolean checkInput(String input, DatabaseHandler db) {
+        // Check user input
+        if (isInputEmpty(input))
+            return false;
+        checkInputForQuit(input, db);
+        return true;
+    }
+
+    /**
+     * 
+     * 
+     * @param input     User Input
+     * @param db        Holds database connection information
+     * @return
+     */
+    public static boolean checkInputAllowEmpty(String input, DatabaseHandler db) {
+        // Check user input
+        checkInputForQuit(input, db);
+        return true;
+    }
+
+    private static boolean isInputEmpty(String input) {
+        if (input.isBlank()) {
+            System.out.println(Messages.inputIsEmptyErrorMessage() + "\n");
             return true;
+        } else
+            return false;
     }
 
     /**
@@ -116,8 +169,9 @@ public class DataHandler {
      * in any letter casing.
      * 
      * @param input     User input
+     * @param db        Holds database connection information
      */
-    public static void checkInputForQuit(String input, DatabaseHandler db) {
+    private static void checkInputForQuit(String input, DatabaseHandler db) {
         if (input.toLowerCase().equals("quit")) {
             System.out.println("\n" + Messages.exitMessage() + "\n\n");
             db.closeDBConnection();

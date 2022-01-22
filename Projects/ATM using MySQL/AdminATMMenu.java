@@ -1,3 +1,4 @@
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.InputMismatchException;
 import java.util.Map;
@@ -49,6 +50,7 @@ public class AdminATMMenu {
     final static String[] adminATMMenuOptions = new String[] {        //FIXME - Add options here when created
         ADD_ACCOUNT_NUM + ". " + ADD_ACCOUNT,
         USER_TRANSACTION_HISTORY_NUM + ". " + USER_TRANSACTION_HISTORY,
+        CHANGE_USER_PIN_NUM + ". " + CHANGE_USER_PIN,
         DELETE_ACCOUNT_NUM + ". " + DELETE_ACCOUNT,
         SIGN_OUT_NUM + ". " + SIGN_OUT};
 
@@ -75,12 +77,10 @@ public class AdminATMMenu {
 
             try {
                 String selection = Main.userInput.nextLine().toLowerCase().trim();
-                // check user input
-                DataHandler.checkInputForQuit(selection, db);
 
                 if (selection.equals(ADD_ACCOUNT_NUM) || selection.equals(ADD_ACCOUNT)) {
-                    System.out.print(ADD_ACCOUNT.toUpperCase() + "\n"
-                        + Messages.returnToATMMenuMessage() + "\n");
+                    System.out.println(ADD_ACCOUNT.toUpperCase() + "\n"
+                        + Messages.returnToATMMenuMessage());
                     boolean validRequirements = false;
                     boolean notDuplicate = false;
                     Map<String, String> newAccountDetails = new HashMap<>();
@@ -89,19 +89,17 @@ public class AdminATMMenu {
                         validRequirements = false;
                         notDuplicate = false;
                         // Enter username
-                        System.out.print(Messages.adminCreateUsernameMessage());
+                        System.out.println(Messages.adminCreateUsernameMessage());
                         String username = Main.userInput.nextLine().trim();
-                        // Check user input
-                        DataHandler.checkInputForQuit(username, db);
                         
-                        if (username.toLowerCase().equals(BACK.toLowerCase()))
+                        // Check admin input
+                        if (username.toLowerCase().equals(BACK.toLowerCase()) || !DataHandler.checkInput(username, db))
                             break;
-                        System.out.print(Messages.adminCreatePINMessage());
+                        System.out.println(Messages.adminCreatePINMessage());
                         String pin = Main.userInput.nextLine().trim();
-                        // Check user input
-                        DataHandler.checkInputForQuit(pin, db);
                         
-                        if (username.toLowerCase().equals(BACK.toLowerCase()))
+                        // Check admin input
+                        if (pin.toLowerCase().equals(BACK.toLowerCase()) || !DataHandler.checkInput(pin, db))
                             break;
 
                         newAccountDetails.put("username", username);
@@ -142,44 +140,311 @@ public class AdminATMMenu {
                         break;
                     }
                 } else if (selection.equals(USER_TRANSACTION_HISTORY_NUM) || selection.equals(
-                    USER_TRANSACTION_HISTORY)) {                      //FIXME
+                    USER_TRANSACTION_HISTORY)) {
+                    
+                    System.out.println(USER_TRANSACTION_HISTORY.toUpperCase() + "\n"
+                        + Messages.returnToATMMenuMessage());
+                    
+                    // Username for the transactions
+                    String username = "";
+                    String maxTransactionsNum = "";
+                    boolean validUsernameRequirements = false;
+                    boolean validTransNumRequirements = false;
+                    // Map of errors for account details requirement checking
+                    Map<String, Boolean> errorMap = new HashMap<>();
+                    // Get list of usernames
+                    ArrayList<String> userList = db.listUsernames();
+                    // Convert ArrayList to String Array
+                    String[] userArray = userList.toArray(new String[userList.size()]);
+                    // Transaction history of the user
+                    ArrayList<String[]> userTransHistory = new ArrayList<>();
+                    
+                    // Display list of users
+                    Messages.listUsernamesMessage(userArray);
+                    
+                    while (true) {
+                        // Ask the admin for a username for the transactions
+                        Messages.transactionHistorySelectUserMessage();
+                        username = Main.userInput.nextLine().trim();
+                        
+                        // Check admin input
+                        if (username.toLowerCase().equals(BACK.toLowerCase()))
+                            break;
+                        
+                        if (DataHandler.checkInput(username, db)) {
+                            // Check if it's a valid username
+                            errorMap = ah.checkAccountRequirements(username, null);
 
-                    // Change everything in here to match new method information
-                    // SIGN OUT from account
-                    // System.out.println(SIGN_OUT.toUpperCase() + "\n" + Messages.signOutMessage() + "\n");
-                    // break;
+                            // Check username and PIN requirements
+                            if (errorMap.get("noErrors")) {
+                                // Check if username exists from list of usernames
+                                if (userList.stream().anyMatch(username::equalsIgnoreCase)) {
+                                    validUsernameRequirements = true;
+                                    break;
+                                } else
+                                    // Error message
+                                    System.out.println(Messages.usernameErrorMessage() + "\n");
+                            } else
+                                // Error message
+                                System.out.println(Messages.accountCheckRequirementsErrorMessage(
+                                    errorMap, AccountsHandler.MIN_USERNAME_LEN,
+                                    AccountsHandler.MAX_USERNAME_LEN, AccountsHandler.REQUIRED_PIN_LEN)
+                                    + "\n");
+                        }
+                    }
+                    
+                    if (validUsernameRequirements) {
+                        // Ask the admin for a number of transactions that should be returned
+                        System.out.println(Messages.accountTransNumMessage());
+                        while (true) {
+                            maxTransactionsNum = Main.userInput.nextLine().trim();
+                            // Check admin input
+                            if (maxTransactionsNum.toLowerCase().equals(BACK.toLowerCase()))
+                                break;
+                            if (DataHandler.checkInputAllowEmpty(maxTransactionsNum, db)) {
+                                // Check if maxTransactionsNum is a number
+                                if (DataHandler.checkNumRequirements(maxTransactionsNum)) {             //FIXME: put an or statement to set a limit with this data?
+                                    validTransNumRequirements = true;
+                                    break;
+                                } else
+                                    // Error message
+                                    System.out.println(Messages.invalidNumInput() + "\n");
+                            }
+                        }
+                    }
+
+                    if (validTransNumRequirements) {
+                        if (!maxTransactionsNum.isEmpty())
+                            // Use query to pull up to last maxTransactionNum records of user transaction data
+                            userTransHistory = db.getUserTransactionHistory(username, Integer.parseInt(maxTransactionsNum));
+                        else
+                            // Use query to pull up to last DEFAULT_MAX_TRANS_NUM records of user transaction data
+                            // userTransHistory = db.getUserTransactionHistory(accountDetails.get("username"), DEFAULT_MAX_TRANS_NUM);                          //FIXME: where do we keep DEFAULT_MAX_TRANS_NUM value? maybe all .ini file settings appear in a new class called "InitialSettings.java"
+                            userTransHistory = db.getUserTransactionHistory(username, 30);                                                                      //FIXME: currently put 30 instead of variable. When above is fixed, delete this line
+                            // Print transaction history starting with most recent
+                            Messages.transactionHistoryMessage(userTransHistory);
+                            System.out.println("\n" + Messages.exitMessage() + "\n\n");
+                            break;
+                    }
                 } else if (selection.equals(CHANGE_USER_PIN_NUM) || selection.toLowerCase().equals(CHANGE_USER_PIN)) {
-                    // FIXME: Finish implementation
-                    // List all available usernames
-                    db.listUsernames();
+                    String username = "";
+                    // Map of errors for account details requirement checking
+                    Map<String, Boolean> errorMap = new HashMap<>();
+                    // Get list of usernames
+                    ArrayList<String> userList = db.listUsernames();
+                    // Convert ArrayList to String Array
+                    String[] userArray = userList.toArray(new String[userList.size()]);
+
+                    // Display list of users
+                    Messages.listUsernamesMessage(userArray);
+                    
+                    // Have a prompt to type in a username to change the PIN of
+                    // Check if user account exists in the DB
+                    // If the user account exists, type in new PIN
+                    // Confirm message that has you retype the same PIN to save new PIN to DB or typing in "back" to go back to the main menu
+                    
+                    // Prompts in terminal
+                    System.out.println(CHANGE_USER_PIN.toUpperCase() + "\n" + Messages.returnToATMMenuMessage());
+
+                    while (true) {
+                        // Type username of account PIN you want to change
+                        System.out.println(Messages.adminSelectUsernameToChangePIN());
+                        username = Main.userInput.nextLine().trim();
+                        
+                        // Check admin input
+                        if (username.toLowerCase().equals(BACK.toLowerCase()))
+                            break;
+                        
+                        if (DataHandler.checkInput(username, db)) {
+                            // Check if it's a valid username
+                            errorMap = ah.checkAccountRequirements(username, null);
+
+                            // Check username requirements
+                            if (errorMap.get("noErrors")) {
+                                // Check if username exists from list of usernames
+                                if (userList.stream().anyMatch(username::equalsIgnoreCase)) {
+                                    break;
+                                } else
+                                    // Error message
+                                    System.out.println(Messages.usernameErrorMessage() + "\n");
+                            } else
+                                // Error message
+                                System.out.println(Messages.accountCheckRequirementsErrorMessage(
+                                    errorMap, AccountsHandler.MIN_USERNAME_LEN,
+                                    AccountsHandler.MAX_USERNAME_LEN, AccountsHandler.REQUIRED_PIN_LEN)
+                                    + "\n");
+                        }
+                    }
+
+                    // Check if user account exists in DB before proceeding //FIXME
+                    if (db.verifyUser(username)) {
+                        String newPIN = "";
+                        boolean changePINIsValid = false;
+                        
+                        while (true) {
+                            // Type new PIN for account
+                            System.out.println(Messages.changePINToNewPINMessage());
+                            newPIN = Main.userInput.nextLine().trim();
+
+                            // Check admin input
+                            if (newPIN.toLowerCase().equals(BACK.toLowerCase()))
+                                break;
+                            
+                            if (DataHandler.checkInput(newPIN, db)) {
+                                // Check if it's a valid PIN
+                                errorMap = ah.checkAccountRequirements(null, newPIN);
+                                
+                                // Check if PIN requirements contained no errors
+                                if (errorMap.get("noErrors")) {
+                                    changePINIsValid = true;
+                                    break;
+                                } else {
+                                    // Error message that lists requirement errors
+                                    System.out.println(Messages.accountCheckRequirementsErrorMessage(errorMap,
+                                    AccountsHandler.MIN_USERNAME_LEN, AccountsHandler.MAX_USERNAME_LEN,
+                                    AccountsHandler.REQUIRED_PIN_LEN) + "\n");
+                                }
+                            }
+                        }
+
+                        // If new PIN entered is valid
+                        while (changePINIsValid) {
+                            // Retype changed PIN
+                            System.out.println(Messages.retypePINToNewPINMessage());
+                            String confirmUserPIN = Main.userInput.nextLine().trim();
+
+                            // Check admin input
+                            if (username.toLowerCase().equals(BACK.toLowerCase()))
+                                break;
+                            
+                            if (DataHandler.checkInput(confirmUserPIN, db)) {
+                                // Checks if admin input PIN matches confirmation input
+                                if (confirmUserPIN.equals(newPIN)) {
+                                    if (db.changeUserPIN(username, newPIN)) { //FIXME
+                                        System.out.println("\n" + Messages.changePINSuccessMessage());
+                                        break;
+                                    } else
+                                        // Error message
+                                        System.out.println(Messages.changePINErrorMessage());
+                                } else 
+                                    // Error message saying the PINs don't match
+                                    System.out.println(Messages.changePINConfirmFailMessage());
+                                    break;
+                            }
+                        }
+                    } else
+                        // Error message saying the account name does not exist in the DB
+                        System.out.println(Messages.adminSelectUsernameToChangePINDoesNotExist());
+                    System.out.println("\n" + Messages.exitMessage() + "\n\n");
+                    break;
+
                 } else if (selection.equals(DELETE_ACCOUNT_NUM) || selection.toLowerCase().equals(DELETE_ACCOUNT)) {
-                    System.out.print(DELETE_ACCOUNT.toUpperCase() + "\n" + Messages.returnToATMMenuMessage() + "\n");
+                    String username = "";
+                    // Map of errors for account details requirement checking
+                    Map<String, Boolean> errorMap = new HashMap<>();
+                    // Get list of usernames
+                    ArrayList<String> userList = db.listUsernames();
+                    // Convert ArrayList to String Array
+                    String[] userArray = userList.toArray(new String[userList.size()]);
+
+                    // Display list of users
+                    Messages.listUsernamesMessage(userArray);
+
+                    // Prompts in terminal
+                    System.out.println(DELETE_ACCOUNT.toUpperCase() + "\n" + Messages.returnToATMMenuMessage());
+
+                    while (true) {
+                        // Type username of account you want to delete
+                        System.out.println(Messages.userAccountDeleteMessage());
+                        username = Main.userInput.nextLine().trim();
+                        
+                        // Check admin input
+                        if (username.toLowerCase().equals(BACK.toLowerCase()))
+                            break;
+                        
+                        if (DataHandler.checkInput(username, db)) {
+                            // Check if it's a valid username
+                            errorMap = ah.checkAccountRequirements(username, null);
+
+                            // Check username requirements
+                            if (errorMap.get("noErrors")) {
+                                // Check if username exists from list of usernames
+                                if (userList.stream().anyMatch(username::equalsIgnoreCase)) {
+                                    break;
+                                } else
+                                    // Error message
+                                    System.out.println(Messages.usernameErrorMessage() + "\n");
+                            } else
+                                // Error message
+                                System.out.println(Messages.accountCheckRequirementsErrorMessage(
+                                    errorMap, AccountsHandler.MIN_USERNAME_LEN,
+                                    AccountsHandler.MAX_USERNAME_LEN, AccountsHandler.REQUIRED_PIN_LEN)
+                                    + "\n");
+                        }
+                    }
+
+                    // Check if user account exists in DB before proceeding
+                    if (db.verifyUser(username)) {
+                        // Retype username to be deleted
+                        System.out.println(Messages.retypeUserAccountDeleteMessage());
+                        String confirmUsername = Main.userInput.nextLine().trim();
+                        
+                        // Check admin input
+                        if (confirmUsername.toLowerCase().equals(BACK.toLowerCase()))
+                            break;
+
+                        if (DataHandler.checkInput(confirmUsername, db)) {
+                            // Checks if username matches confirmation user input
+                            if (confirmUsername.toLowerCase().equals(username)) {
+                                // boolean on the status of the account being deleted
+                                if (db.deleteUserAccount(username)) {
+                                    System.out.println(Messages.accountDeletedMessage(username));
+                                    break;
+                                } else
+                                    // Error message
+                                    System.out.println(Messages.accountDeletionErrorMessage(username));
+                            } else {
+                                // Error message
+                                System.out.println(Messages.accountDeleteConfirmFailMessage());
+                                break;
+                            }
+                        }
+                        System.out.println("\n" + Messages.exitMessage() + "\n\n");
+                        break;
+                    } else
+                        // Error message saying the account name does not exist in the DB
+                        System.out.println(Messages.adminSelectUsernameToChangePINDoesNotExist());
+                    System.out.println("\n" + Messages.exitMessage() + "\n\n");
+                    break;
+
+                /*  OLD CODE
+                    System.out.println(DELETE_ACCOUNT.toUpperCase() + "\n" + Messages.returnToATMMenuMessage());
                     // FIXME: Finish implementation
                     // List all available usernames
-                    db.listUsernames();
+                    db.listUsernames(); // FIXME: Need to add this to a single table with a title set in Messages class: "List of Current Users"
 
                     // Confirm account deletion
-                    System.out.print(Messages.accountDeleteConfirmationMessage());  //FIXME: Add a new message for choosing a username to delete
-                    // String confirmUserInput = Main.userInput.nextLine().trim();
+                    System.out.print(Messages.userAccountDeleteMessage());
+                    String confirmUserInput = Main.userInput.nextLine().trim();
                     
-                    // // Check user input
-                    // if (confirmUserInput.toLowerCase().equals(BACK.toLowerCase()))
-                    //     break;
-                    // DataHandler.checkInputForQuit(confirmUserInput, db);
+                    // Check admin input
+                    if (confirmUserInput.toLowerCase().equals(BACK.toLowerCase()) || !DataHandler.checkInput(confirmUserInput, db))
+                        break;
 
-                    // // Checks if username matches confirmation user input
-                    // if (confirmUserInput.toLowerCase().equals(accountDetails.get("username").toLowerCase())) {
-                    //     // boolean on the status of the account being deleted
-                    //     if (db.deleteUserAccount(accountDetails.get("username")))
-                    //         System.out.println(Messages.accountDeletedMessage(accountDetails.get("username")));
-                    //     else
-                    //         // Error message
-                    //         System.out.println(Messages.accountDeletionErrorMessage(accountDetails.get("username")));
-                    // } else
-                    //     // Error message
-                    //     System.out.println(Messages.accountDeleteConfirmFailMessage());
-                    // System.out.println("\n" + Messages.exitMessage() + "\n\n");
-                    // break;
+                    // Checks if username matches confirmation user input
+                    if (confirmUserInput.toLowerCase().equals(accountDetails.get("username").toLowerCase())) {
+                        // boolean on the status of the account being deleted
+                        if (db.deleteUserAccount(accountDetails.get("username")))
+                            System.out.println(Messages.accountDeletedMessage(accountDetails.get("username")));
+                        else
+                            // Error message
+                            System.out.println(Messages.accountDeletionErrorMessage(accountDetails.get("username")));
+                    } else
+                        // Error message
+                        System.out.println(Messages.accountDeleteConfirmFailMessage());
+                    System.out.println("\n" + Messages.exitMessage() + "\n\n");
+                    break;
+                */
                 } else if (selection.equals(SIGN_OUT_NUM) || selection.equals(SIGN_OUT)) {
                     // SIGN OUT from account
                     System.out.println(SIGN_OUT.toUpperCase() + "\n" + Messages.signOutMessage()
@@ -189,6 +454,7 @@ public class AdminATMMenu {
                     // Error message
                     System.out.println(Messages.atmMenuInvalidChoiceMessage());
                 }
+                
             } catch (InputMismatchException e) {
                 System.out.println(Messages.atmMenuInvalidChoiceMessage());
                 Main.userInput.nextLine();

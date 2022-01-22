@@ -12,74 +12,38 @@ import java.util.Map;
 public class Messages {
     public Messages() {}
 
-    /**
-     * 
-     * 
-     * @return
-     */
     public static String greetMessage() {
         return "Welcome to Bank of Money!";
     }
 
-    /**
-     * 
-     * 
-     * @return
-     */
     public static String exitMessage() {
         return "Thank you for choosing Bank of Money!";
     }
 
-    /**
-     * 
-     * 
-     * @return
-     */
     public static String signInUsernameMessage() {
         return "Enter Username: ";
     }
 
-    /**
-     * 
-     * 
-     * @return
-     */
     public static String signInPINMessage() {
         return "Enter PIN: ";
     }
 
-    /**
-     * 
-     * 
-     * @return
-     */
     public static String adminCreateUsernameMessage() {
-        return "Please type in the name of the user you wish to create:\nUsername: ";
+        return "Please type in the name of the user you wish to create: ";
     }
 
-    /**
-     * 
-     * 
-     * @return
-     */
     public static String adminCreatePINMessage() {
-        return "Please type in the user's 6 digit PIN:\nPIN: ";
+        return "Please type in the user's 6 digit PIN: ";
     }
 
-    /**
-     * 
-     * 
-     * @return
-     */
     public static String accountErrorMessage() {
         return "Error with Username and/or PIN. Please try again.";
     }
 
-    /**
-     * 
-     * 
-     * @return
-     */
+    public static String usernameErrorMessage() {
+        return "Username does not exist. Please try again.";
+    }
+
     public static String accountCheckDuplicateUserErrorMessage() {
         return "This username already exists. Please choose a different username.";
     }
@@ -136,47 +100,30 @@ public class Messages {
         return "Welcome into your account.";
     }
 
-    /**
-     * 
-     * 
-     * @return
-     */
     public static String adminAccountValidMessage() {
         return "Welcome into your admin account!";
     }
 
-    /**
-     * 
-     * 
-     * @return
-     */
     public static String adminAccountCreatedMessage() {
         return "Account has been successfully created.";
     }
 
-    /**
-     * 
-     * 
-     * @return
-     */
     public static String generalErrorMessage() {
         return "Something went wrong!";
     }
 
-    /**
-     * 
-     * 
-     * @return
-     */
     public static String accountDeleteConfirmationMessage() {
         return "Please type in your username to confirm DELETING your account: ";
     }
 
-    /**
-     * 
-     * 
-     * @return
-     */
+    public static String userAccountDeleteMessage() {
+        return "Please type in the username of the account you wish to DELETE: ";
+    }
+
+    public static String retypeUserAccountDeleteMessage() {
+        return "Please retype in the username of the account you wish to DELETE: ";
+    }
+
     public static String accountDeleteConfirmFailMessage() {
         return "Username was mistyped, account deletion was aborted.";
     }
@@ -201,69 +148,46 @@ public class Messages {
         return "Your account " + username + "could not be successfully deleted at this time. Please try again.";
     }
 
-    /**
-     * 
-     * 
-     * @return
-     */
     public static String changePINConfirmationMessage() {
         return "Please type in your current PIN to confirm changing it: ";
     }
 
-    /**
-     * 
-     * 
-     * @return
-     */
     public static String changePINConfirmFailMessage() {
         return "PIN was mistyped, account PIN change was aborted.";
+    }
+
+    public static String adminSelectUsernameToChangePIN() {
+        return "Please type in the username of the account you wish change the PIN: ";
+    }
+
+    public static String adminSelectUsernameToChangePINDoesNotExist() {
+        return "The account username does not exist.";
     }
 
     public static String changePINToNewPINMessage() {       //FIXME - finish implementing into ATMMenu.java
         return "Please type in your new PIN now: ";
     }
 
-    /**
-     * 
-     * 
-     * @return
-     */
+    public static String retypePINToNewPINMessage() {
+        return "Please retype in your new PIN now: ";
+    }
+
     public static String changePINSuccessMessage() {
         return "Your PIN has successfully been changed.";
     }
 
-    /**
-     * 
-     * 
-     * @return
-     */
     public static String changePINErrorMessage() {
         return "Your PIN could not be successfully changed at this time. Please try again.";
     }
 
-    /**
-     * 
-     * 
-     * @return
-     */
     public static String atmMenuIncompleteMessage() {
         return "This choice is currently being worked on. Please check again in the future.";
     }
 
-    /**
-     * 
-     * 
-     * @return
-     */
     public static String atmMenuInvalidChoiceMessage() {
         return "You have chosen an invalid option. Please try again.";
     }
 
-    /**
-     * 
-     * 
-     * @return
-     */
     public static String withdrawAmountMessage() {
         return "Please enter the amount you would like to withdraw: $";
     }
@@ -280,20 +204,10 @@ public class Messages {
                 + "\nPlease enter a new amount within your funds.";
     }
 
-    /**
-     * 
-     * 
-     * @return
-     */
     public static String withdrawZeroErrorMessage() {
         return "Please enter an amount greater than $0.00";
     }
 
-    /**
-     * 
-     * 
-     * @return
-     */
     public static String withdrawNewAccountMessage() {
         return "You just opened your account and don't have any funds yet! Please make a deposit first. ";
     }
@@ -310,38 +224,18 @@ public class Messages {
             + "try again.";
     }
 
-    /**
-     * 
-     * 
-     * @return
-     */
     public static String depositAmountMessage() {
         return "Please enter the amount you would like to deposit: $";
     }
 
-    /**
-     * 
-     * 
-     * @return
-     */
     public static String depositZeroErrorMessage() {
         return "Please enter an amount greater than $0.00";
     }
 
-    /**
-     * 
-     * 
-     * @return
-     */
     public static String depositNewAccountMessage() {
         return "You just opened your account and don't have any funds yet. ";
     }
 
-    /**
-     * 
-     * 
-     * @return
-     */
     public static String invalidTransactionInputMessage() {
         return "You have entered an invalid input. Input must contain only numbers and at most 2 decimal places. "
                 + "Please try again.";
@@ -367,40 +261,30 @@ public class Messages {
         return "Your new balance is: " + balance + "\nYour transaction has now been completed.";
     }
 
-    /**
-     * 
-     * 
-     * @param userCSV
-     * @return
-     */
-    public static String fileNotFoundExceptionMessage(String userCSV) {
-        return "ERROR: The filename " + userCSV + " does not exist. Please make sure " + userCSV
-                + " file was created successfully.";
+    public static String transactionHistorySelectUserMessage() {
+        return "Please type in the username of the account you wish to see the transactions for:";
+    }
+    
+    public static String accountTransNumMessage() {
+		return "Please type in the maximum number of transactions you wish to see or press \"Enter\" for default:";
+	}
+
+    public static String invalidNumInput() {
+        return "Value must only be numerical with no other characters. Please try again.";
     }
 
-    /**
-     * 
-     * 
-     * @return
-     */
+    public static String inputIsEmptyErrorMessage() {
+        return "You must enter a valid value. Please try again.";
+    }
+
     public static String shutdownATMMessage() {
         return "Type in \"" + ATMMenu.QUIT.toLowerCase() + "\" at any time to shutdown ATM.";
     }
 
-    /**
-     * 
-     * 
-     * @return
-     */
     public static String returnToATMMenuMessage() {
         return "Type in \"back\" to return to ATM Menu";
     }
 
-    /**
-     * 
-     * 
-     * @return
-     */
     public static String signOutMessage() {
         return "You have successfully signed out of your account.";
     }
@@ -429,6 +313,16 @@ public class Messages {
 
     /**
      * 
+     * @param listUsernames
+     */
+    public static void listUsernamesMessage(String[] listUsernames) {
+        System.out.println();
+        String title = "These are a list of users:";
+        Printer.print1ColTable(title, listUsernames);
+    }
+
+    /**
+     * 
      * 
      * @param userTransHistory
      */
@@ -438,5 +332,10 @@ public class Messages {
         userTransHistory.add(0, title);
         System.out.println("Transactions are listed from most recent to oldest.\n");
         Printer.printMultipleColTable(userTransHistory);
+    }
+
+    public static String fileNotFoundExceptionMessage(String INI_FILEPATH) {
+        return "ERROR: The filename " + INI_FILEPATH + " does not exist. Please make sure "
+            + INI_FILEPATH + " file was created successfully.";
     }
 }

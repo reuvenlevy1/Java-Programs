@@ -10,40 +10,40 @@ public class DBQueries {
     /**
      * Creates the {@code accountTable} table if it doesn't exist. This
      * includes the following columns:
-     * <p> account_id
-     * <p> username
-     * <p> pin
+     * <p> account_id </p>
+     * <p> username </p>
+     * <p> pin </p>
      * 
-     * @param accountTable  Fixed value for the account table name
-     * @return              SQL Query
+     * @param accountTable      Fixed value for the account table name
+     * @return                  SQL Query
      */
     public static String createAccountTableQuery(String accountTable) {
         return "CREATE TABLE IF NOT EXISTS " + accountTable + " ("
             + "account_id INT NOT NULL AUTO_INCREMENT PRIMARY KEY, "
-            + "username varchar(16) NOT NULL, "
-            + "pin INT NOT NULL);";
+            + "username VARCHAR(16) NOT NULL, "
+            + "pin VARCHAR(255) NOT NULL);";
     }
 
     /**
      * 
-     * @param username  Account username
-     * @return          SQL Query
+     * @param username      Account username
+     * @return              SQL Query
      */
     public static String createUserTableQuery(String username) {
         return "CREATE TABLE IF NOT EXISTS " + username + " (" + "transaction_id INT NOT NULL PRIMARY KEY, "
-            + "transaction_type varchar(11) NOT NULL, " + "amount FLOAT NOT NULL, balance FLOAT NOT NULL);";
+            + "transaction_type VARCHAR(11) NOT NULL, " + "amount FLOAT NOT NULL, balance FLOAT NOT NULL);";
     }
 
     /**
      * 
      * @param username          Account username
      * @param pin               Account PIN
-     * @param accountTable     Fixed value for the account table name     
+     * @param accountTable      Fixed value for the account table name     
      * @return                  SQL Query
      */
     public static String addUserToAccountTableQuery(String username, String pin, String accountTable) {
-        return "INSERT INTO " + accountTable + " (username, pin) values (\"" + username + "\", "
-            + Integer.parseInt(pin) + ");";
+        return "INSERT INTO " + accountTable + " (username, pin) values (\"" + username + "\", \""
+            + pin + "\");";
     }
 
     /**
@@ -54,7 +54,7 @@ public class DBQueries {
      * @param transactionType
      * @param amount
      * @param balance
-     * @return
+     * @return                  SQL Query
      */
     public static String addTransactionToUserTableQuery(String username, int transactionID,
         String transactionType, Double amount, Double balance) {
@@ -67,18 +67,29 @@ public class DBQueries {
      * 
      * @param accountUser       Account username
      * @param accountPIN        Account PIN
-     * @param accountTable     Fixed value for the account table name
+     * @param accountTable      Fixed value for the account table name
      * @return                  SQL Query
      */
-    public static String verifyUserQuery(String accountUser, String accountPIN, String accountTable) {
-        return "SELECT username, pin FROM " + accountTable + " WHERE username='" + accountUser + "' AND pin="
-            + Integer.parseInt(accountPIN) + ";";
+    public static String verifyAccountQuery(String accountUser, String accountPIN, String accountTable) {
+        return "SELECT username, pin FROM " + accountTable + " WHERE username='" + accountUser + "' AND pin=\""
+            + accountPIN + "\";";
+    }
+
+    /**
+     * 
+     * 
+     * @param username          Account username
+     * @param accountTable      Fixed value for the account table name
+     * @return                  SQL Query
+     */
+    public static String verifyUserQuery(String username, String accountTable) {
+        return "SELECT username FROM " + accountTable + " WHERE username='" + username + "';";
     }
 
     /**
      * 
      * @param username          Account username
-     * @param accountTable     Fixed value for the account table name
+     * @param accountTable      Fixed value for the account table name
      * @return                  SQL Query
      */
     public static String isDupUsernameQuery(String username, String accountTable) {
@@ -87,8 +98,8 @@ public class DBQueries {
 
     /**
      * 
-     * @param username  Account username
-     * @return          SQL Query
+     * @param username      Account username
+     * @return              SQL Query
      */
     public static String getLatestUserBalanceQuery(String username) {
         return "SELECT balance FROM " + username + " WHERE transaction_id=1;";
@@ -106,8 +117,8 @@ public class DBQueries {
 
     /**
      * 
-     * @param username  Account username
-     * @return          SQL Query
+     * @param username      Account username
+     * @return              SQL Query
      */
     public static String updateUserTransactionIDsQuery(String username) {
         return "UPDATE " + username + " SET transaction_id=transaction_id+1 ORDER BY transaction_id DESC;";
@@ -116,7 +127,7 @@ public class DBQueries {
     /**
      * 
      * @param username          Account username
-     * @param accountTable     Fixed value for the account table name
+     * @param accountTable      Fixed value for the account table name
      * @return                  SQL Query
      */
     public static String deleteUserFromAccountTableQuery(String username, String accountTable) {
@@ -125,18 +136,30 @@ public class DBQueries {
 
     /**
      * 
-     * @param username  Account username
-     * @return          SQL Query
+     * @param username      Account username
+     * @return              SQL Query
      */
     public static String deleteUserTableQuery(String username) {
         return "DROP TABLE " + username + ";";
     }
 
+    /**
+     * 
+     * @param username
+     * @param newPin
+     * @param accountTable
+     * @return
+     */
     public static String changeUserPINQuery(String username, String newPin, String accountTable) {
-        return "UPDATE " + accountTable + " SET pin=" + newPin + " WHERE username='" + username + "';";
+        return "UPDATE " + accountTable + " SET pin=\"" + newPin + "\" WHERE username='" + username + "';";
     }
 
+    /**
+     * 
+     * @param accountTable
+     * @return
+     */
     public static String listUsernamesQuery(String accountTable) {
-        return "SELECT username FROM " + accountTable;
+        return "SELECT username FROM " + accountTable + " ORDER BY username ASC";
     }
 }

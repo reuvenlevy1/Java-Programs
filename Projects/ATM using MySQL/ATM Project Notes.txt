@@ -8,3 +8,6 @@ The jar location was placed in the following folder on my PC:
 			https://www.w3resource.com/mysql/mysql-java-connection.php
 Connected to Database Code got from here:
 	https://www.tutorialspoint.com/connecting-to-a-mysql-database-with-java
+
+Encryption:
+	https://howtodoinjava.com/java/java-security/aes-256-encryption-decryption/

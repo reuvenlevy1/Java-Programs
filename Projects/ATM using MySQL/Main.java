@@ -1,3 +1,5 @@
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.Scanner;
 
 /**
@@ -16,14 +18,20 @@ public class Main {
     /**
      * The main driver method for program.
      * 
-     * @param args                      Default parameters for method
+     * @param args      Default parameters for method
      */
     public static void main(String[] args) {
+        // Read in user settings
+        ReadINIFile ini = new ReadINIFile();
+        try {
+            ini.readUserCSV();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         // Connect to DB
         DatabaseHandler db = new DatabaseHandler();
-        // Generates the accounts.csv
-        // CSVFileHandler csv = new CSVFileHandler();
-        // csv.checkAccountsCSV();
 
         while (true) {
             // if (AdminATMMenu.accountAdded) //FIXME: fix this later
@@ -31,22 +39,19 @@ public class Main {
             // SignIn signIn = new SignIn(csv);
             SignIn signIn = new SignIn(db);
             
-            //FIXME - Add the ability for admin to view all list of users and to reset their PINS
-            //FIXME - Add Admin feature to be able to delete account: include all accounts, have confirming deletion of account just
-                //like in ATMMenu.java
-            //FIXME - Add Admin feature to be able to see a user's complete transaction history or to specify a max limit of records
-                //to return
+           
+            //FIXME - Add Admin ability to see user stats based on a transaction number they place
+                //--> Can also see stats across ALL accounts
+
+            //FIXME - Complete User Stats
+
+            //FIXME - Add admin ability to NOT be kicked out of ATM after every transaction
             
 
-            //FIXME - Add hashing to stored passwords in DB for security
-            //FIXME - Add SQL.properties file that will allow configuration of database connection details to the DatabaseHandler.java class.
-                    //--> Also allow configuration to some of the hardcoded variables, such as max/min length of characters for username & PIN
 
             //FIXME - Add documentation above all method names
                     //--> Completed for Main.java, SignIn.java, ATMDataHandler.java, AdminATMMenu.java, ATMMenu.java, AccountsHandler.java
 
-            //FIXME - make sure to check that username goes into database case-sensitively, but all comparisons are done
-                //case-insensitively (set to lowercase comparison)
             //FIXME - test user transaction history
             //FIXME - test user delete an account
             //FIXME - delete all unecessary files, methods, variables, imports

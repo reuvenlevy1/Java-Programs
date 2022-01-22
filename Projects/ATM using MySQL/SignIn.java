@@ -53,24 +53,36 @@ public class SignIn {
         ah = new AccountsHandler(db);
         // Holds value for account being correct/incorrect
         boolean valid = false;
+        // Holds value for username passing requirements check
+        boolean validUser = false;
+        // Holds value for PIN passing requirements check
+        boolean validPIN = false;
         accountDetails = new HashMap<>();
         System.out.println(Messages.greetMessage());
         AccountsHandler validateAcc = new AccountsHandler(db);
 
         while (!valid) {
+            validUser = false;
+            validPIN = false;
             // Enter username
             System.out.print(Messages.shutdownATMMessage() + "\n\n"
                 + Messages.signInUsernameMessage());
             username = Main.userInput.nextLine().trim();
-            DataHandler.checkInputForQuit(username, db);
+            // Check user input
+            if (!DataHandler.checkInput(username, db))
+                break;
             accountDetails.put("username", username);
+            validUser = true;
 
             // Enter PIN
             System.out.print(Messages.signInPINMessage());
             pin = Main.userInput.nextLine().trim();
 
-            DataHandler.checkInputForQuit(pin, db);
+            // Check user input
+            if (!DataHandler.checkInput(pin, db))
+                break;
             accountDetails.put("pin", pin);
+            validPIN = true;
 
             // Map of errors for account details requirement checking
             Map<String, Boolean> errorMap = new HashMap<>();
@@ -86,12 +98,10 @@ public class SignIn {
                     AccountsHandler.REQUIRED_PIN_LEN) + "\n");
         }
 
-        if (validateAcc.verifyAdmin(accountDetails)) {
-            // Send to ATMMenu page for valid account
+        if (validUser && validPIN && validateAcc.verifyAdmin(accountDetails)) {
+            // Send to AdminATMMenu page for valid admin account
             AdminATMMenu atm = new AdminATMMenu(accountDetails, db, ah);
-        }
-        // Call to read readUserCSV file for validated user
-        else {           // FIXME: Figure out how to work for users
+        } else if (validUser && validPIN) {
             // Send to ATMMenu page for valid account
             ATMMenu atm = new ATMMenu(accountDetails, db, ah);
         }

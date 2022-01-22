@@ -25,7 +25,7 @@ public class DatabaseHandler {
     /**
      * Table name for accounts.
      */
-    final static String ACCOUNT_TABLE = "account";
+    final static String ACCOUNT_TABLE = ReadINIFile.ACCOUNT_TABLE;
     
     // New user details
     /**
@@ -51,14 +51,14 @@ public class DatabaseHandler {
     /**
      * Constructor that creates database connection.
      */
-    public DatabaseHandler() {
-        String mysqlURL = "jdbc:mysql://localhost:3306/atm_app?useSSL=false";
-        String dbUser = "root";
-        String dbPass = "password";
+    public DatabaseHandler() {              //FIXME: take in from a .ini file
+        String mysqlURL = ReadINIFile.MYSQL_URL;
+        String dbUser = ReadINIFile.DB_USERNAME;
+        String dbPass = ReadINIFile.DB_PASSWORD;
         try {
             connect = DriverManager.getConnection(mysqlURL, dbUser, dbPass);
             if (connect != null) {
-                System.out.println("Database connection is successful");
+                System.out.println("Database connection is successful\n");            //FIXME: Move message to Messages.java class
                 statement = connect.createStatement();
             }
         } catch (Exception e) {
@@ -86,11 +86,11 @@ public class DatabaseHandler {
     /**
      * Adds the new user to the {@code ACCOUNT_TABLE} table.
      * 
-     * @param username  Username input from the user
+     * @param username  Account username
      * @param pin       Account PIN
      */
     private void addUserToAccountTable(String username, String pin) {
-        String query = DBQueries.addUserToAccountTableQuery(username, pin, ACCOUNT_TABLE);
+        String query = DBQueries.addUserToAccountTableQuery(username, AES256.encrypt(pin), ACCOUNT_TABLE);
         // Run query
         try {
             statement.executeUpdate(query);
@@ -128,7 +128,7 @@ public class DatabaseHandler {
 
     /**
      * 
-     * @param username  Account username
+     * @param username          Account username
      * @param transactionType
      * @param amount
      * @param balance
@@ -151,18 +151,18 @@ public class DatabaseHandler {
     }
 
     /**
-     * Verify if username and password details entered are correct /incorrect
+     * Verify if username and password details entered are correct/incorrect
      * 
      * @param accountDetails    {@code Map} that holds username and pin:
      *                          <p>{@code accountDetails["username"]}
      *                          <p>{@code accountDetails["pin"]}
      * @return                  {@code false} if {@code accountDetails} doesn't exist in database
      */
-    public boolean verifyUser(Map<String, String> accountDetails) {
+    public boolean verifyAccount(Map<String, String> accountDetails) {
         // verify both username and PIN are valid
         String accountUser = accountDetails.get("username");
         String accountPin = accountDetails.get("pin");
-        String query = DBQueries.verifyUserQuery(accountUser, accountPin, ACCOUNT_TABLE);
+        String query = DBQueries.verifyAccountQuery(accountUser, AES256.encrypt(accountPin), ACCOUNT_TABLE);
 
         // Run query and take result if exists
         try {
@@ -170,7 +170,7 @@ public class DatabaseHandler {
 
             if (resultset.next())
                 if (resultset.getString("username").toLowerCase().equals(accountUser.toLowerCase())
-                        && resultset.getString("pin").equals(accountPin))
+                        && AES256.decrypt(resultset.getString("pin")).equals(accountPin))
                     return true;
         } catch (SQLException ex) {
             Logger logger = Logger.getLogger(AccountsHandler.class.getName());
@@ -180,29 +180,36 @@ public class DatabaseHandler {
     }
 
     /**
-     * Checks if username already exists in accounts.csv
+     * Verify if username details entered are correct/incorrect
+     * 
+     * @param username      Account username
+     * @return              {@code false} if {@code accountDetails} doesn't exist in database
+     */
+    public boolean verifyUser(String username) {
+        // verify username is valid
+        String query = DBQueries.verifyUserQuery(username, ACCOUNT_TABLE);
+
+        // Run query and take result if exists
+        try {
+            ResultSet resultset = statement.executeQuery(query);
+
+            if (resultset.next())
+                if (resultset.getString("username").toLowerCase().equals(username.toLowerCase()))
+                    return true;
+        } catch (SQLException ex) {
+            Logger logger = Logger.getLogger(AccountsHandler.class.getName());
+            logger.log(Level.SEVERE, ex.getMessage(), ex);
+        }
+        return false;
+    }
+
+    /**
+     * Checks if username already exists in ACCOUNT_TABLE.
      * 
      * @param username  Account username
      * @return
      */
     public boolean checkDupUsers(String username) {
-        try {
-            if(isDupUsername(username))
-                return true;
-            else
-                return false;
-        } catch (NullPointerException e) {
-            return false;
-        }
-    }
-
-    /**
-     * 
-     * 
-     * @param username  Account username
-     * @return
-     */
-    private boolean isDupUsername(String username) {
         String query = DBQueries.isDupUsernameQuery(username, ACCOUNT_TABLE);
         // Run query and take result if exists
         try {
@@ -221,8 +228,8 @@ public class DatabaseHandler {
         } catch (SQLException ex) {
             Logger logger = Logger.getLogger(AccountsHandler.class.getName());
             logger.log(Level.SEVERE, ex.getMessage(), ex);
-            return false;
         }
+        return false;
     }
 
     /**
@@ -289,12 +296,19 @@ public class DatabaseHandler {
         } catch (SQLException ex) {
             Logger logger = Logger.getLogger(AccountsHandler.class.getName());
             logger.log(Level.SEVERE, ex.getMessage(), ex);
-            return false;
         }
+        return false;
     }
     
+    /**
+     * Change the PIN of the entered username
+     * 
+     * @param username  Account username
+     * @param pin       Account PIN
+     * @return
+     */
     public boolean changeUserPIN(String username, String pin) {
-        String query = DBQueries.changeUserPINQuery(username, pin, ACCOUNT_TABLE);
+        String query = DBQueries.changeUserPINQuery(username, AES256.encrypt(pin), ACCOUNT_TABLE);
         // Run query
         try {
             statement.executeUpdate(query);
@@ -302,25 +316,28 @@ public class DatabaseHandler {
         } catch (SQLException ex) {
             Logger logger = Logger.getLogger(AccountsHandler.class.getName());
             logger.log(Level.SEVERE, ex.getMessage(), ex);
-            return false;
         }
+        return false;
     }
 
     /**
      * 
      */
-    public void listUsernames() {
+    public ArrayList<String> listUsernames() {
+        ArrayList<String> userList = new ArrayList<>();
         String query = DBQueries.listUsernamesQuery(ACCOUNT_TABLE);
         // Run query and take results if exists
         try {
             ResultSet resultset = statement.executeQuery(query);
             // Get usernames data
             while (resultset.next())
-                System.out.println(resultset.getString(1));
+                userList.add(resultset.getString(1));
+            return userList;
         } catch (SQLException ex) {
             Logger logger = Logger.getLogger(AccountsHandler.class.getName());
             logger.log(Level.SEVERE, ex.getMessage(), ex);
         }
+        return null;
     }
 
     /**
