@@ -70,6 +70,11 @@ public class ReadINIFile {
     public static String ACCOUNT_TABLE;
 
     /**
+     * Default name of the table created to hold all user transactions data.
+     */
+    public static String EVERY_TRANSACTION_TABLE;
+
+    /**
      * Reads {@code atm_details.ini} file and gets database, max/min user length, PIN length
      * and account table name information.
      * 
@@ -116,6 +121,9 @@ public class ReadINIFile {
                     } else if (line.contains("Account_Table_Name")) {
                         equalIndex = line.indexOf("=");
                         ACCOUNT_TABLE = line.substring(equalIndex+1).trim();
+                    } else if (line.contains("Every_Transaction_Table_Name")) {
+                        equalIndex = line.indexOf("=");
+                        EVERY_TRANSACTION_TABLE = line.substring(equalIndex+1).trim();
                     }
                 }
             }

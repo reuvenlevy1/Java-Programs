@@ -74,8 +74,8 @@ public class AccountsHandler {
      * Checks {@code username} and {@code pin} for invalid characters and invalid
      * charcter lengths.
      * 
-     * @param username      Username input from the user
-     * @param pin           PIN inputted from the user
+     * @param username      Username trimmed input from the user
+     * @param pin           PIN trimmed input from the user
      * @return              Map of {@code true} values if username and PIN meets requirements
      */
     public Map<String, Boolean> checkAccountRequirements(String username, String pin) {
@@ -102,11 +102,11 @@ public class AccountsHandler {
      * Private method that checks {@code username} for both invalid characters
      * and invalid character lengths.
      * 
-     * @param username      Username input from the user
+     * @param username      Username trimmed input from the user
      */
     private void checkUserRequirements(String username) {
         // Check if username contains invalid characters
-        char[] usernameInvalidCharsList = "!@#$%^&*()-_=+`~\\|[];:'\",./?".toCharArray();
+        char[] usernameInvalidCharsList = "!@#$%^&*()-_=+`~\\|[];:'\",./? ".toCharArray();
         for (char invalidChar : usernameInvalidCharsList) {
             if (username.contains(Character.toString(invalidChar))) {
                 errorMap.replace("usernameInvalidChar", true);
@@ -116,7 +116,7 @@ public class AccountsHandler {
         }
         
         // Check if username doesn't start with a letter
-        if (!username.toLowerCase().matches("^[a-z]+[0-9]*")) {
+        if (!username.toLowerCase().matches("^[a-z].*")) {
             errorMap.replace("usernameFirstCharNotLetter", true);
             errorMap.replace("noErrors", false);
         }
@@ -138,7 +138,7 @@ public class AccountsHandler {
      * Private method that checks {@code pin} for both invalid characters
      * and invalid character lengths.
      * 
-     * @param pin
+     * @param pin       PIN trimmed input from the user
      */
     private void checkPINRequirements(String pin) {
         // Check if pin contains invalid characters
@@ -186,7 +186,7 @@ public class AccountsHandler {
     /**
      * Checks username details to see if they have an existing user account.
      * 
-     * @param username          Username input from the user
+     * @param username          Username trimmed input from the user
      * @return                  {@code true} if {@code accountDetails} match
      *                          an existing account.
      */

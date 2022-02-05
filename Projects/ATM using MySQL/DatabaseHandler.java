@@ -5,6 +5,7 @@ import java.sql.SQLException;
 import java.sql.SQLSyntaxErrorException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -26,6 +27,16 @@ public class DatabaseHandler {
      * Table name for accounts.
      */
     final static String ACCOUNT_TABLE = ReadINIFile.ACCOUNT_TABLE;
+
+    /**
+     * Table name for all user transactions.
+     */
+    final static String EVERY_TRANSACTION_TABLE = ReadINIFile.EVERY_TRANSACTION_TABLE;
+    
+    /**
+     * Max username length.
+     */
+    final static String MAX_USERNAME_LEN = ReadINIFile.MAX_USERNAME_LEN;
     
     // New user details
     /**
@@ -62,7 +73,8 @@ public class DatabaseHandler {
                 statement = connect.createStatement();
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            System.out.println(Messages.databaseConnectionErrorMessage() + "\n");
+            System.exit(0);
         }
     }
 
@@ -76,6 +88,7 @@ public class DatabaseHandler {
       
         // All tables will be created if they don't exist
         createAccountTable();
+        createEveryTransactionTable();                       //FIXME
         addUserToAccountTable(username, pin);
         createUserTable(username);
         // Adds an initial transaction to the user table
@@ -115,6 +128,19 @@ public class DatabaseHandler {
 
     /**
      * 
+     */
+    private void createEveryTransactionTable() {
+        // Create table if doesn't exist
+        String query = DBQueries.createEveryTransactionTableQuery(EVERY_TRANSACTION_TABLE, MAX_USERNAME_LEN);
+        try {
+            statement.execute(query);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * 
      * @param username  Account username
      */
     private void createUserTable(String username) {
@@ -136,10 +162,35 @@ public class DatabaseHandler {
     public void addTransactionToUserTable(String username, int transactionID,
         String transactionType, Double amount, Double balance) {                //FIXME - Test for Withdraw and deposit
         // Execute query to update transaction_id numbers
-        String updateQuery = DBQueries.updateUserTransactionIDsQuery(username);
+        String updateQuery = DBQueries.updateTransactionIDsQuery(username);
         // Add new transaction
         String addQuery =
             DBQueries.addTransactionToUserTableQuery(username, transactionID, transactionType, amount, balance);
+        // Run queries
+        try {
+            statement.executeUpdate(updateQuery);
+            statement.executeUpdate(addQuery);
+        } catch (SQLException ex) {
+            Logger logger = Logger.getLogger(AccountsHandler.class.getName());
+            logger.log(Level.SEVERE, ex.getMessage(), ex);
+        }
+    }
+
+    /**
+     * 
+     * @param username          Account username
+     * @param transactionType
+     * @param amount
+     * @param balance
+     */
+    public void addTransactionToEveryTransactionTable(String username, int transactionID,
+        String transactionType, Double amount, Double balance) {                                //FIXME - Test for Withdraw and deposit; never tested
+        // Execute query to update transaction_id numbers
+        String updateQuery = DBQueries.updateTransactionIDsQuery(EVERY_TRANSACTION_TABLE);
+        // Add new transaction
+        String addQuery =
+            DBQueries.addTransactionToEveryTransactionTableQuery(
+                EVERY_TRANSACTION_TABLE, transactionID, username, transactionType, amount, balance);
         // Run queries
         try {
             statement.executeUpdate(updateQuery);
@@ -333,6 +384,41 @@ public class DatabaseHandler {
             while (resultset.next())
                 userList.add(resultset.getString(1));
             return userList;
+        } catch (SQLException ex) {
+            Logger logger = Logger.getLogger(AccountsHandler.class.getName());
+            logger.log(Level.SEVERE, ex.getMessage(), ex);
+        }
+        return null;
+    }
+
+    /**
+     * 
+     * 
+     * @param username
+     * @param maxTransactionsNum
+     * @return
+     */
+    public Map<String, String> getTransactionTypeNumMap(String username, String maxTransactionsNum, String transactionType) {
+        /**
+         * <Describe the content of queryMap here>
+         */
+        Map<String, String> queryMap = new HashMap<>();
+        Map<String, String> transactionTypeNumMap = new HashMap<>();
+
+        queryMap = DBQueries.listTransactionTypeQuery(username, maxTransactionsNum, transactionType);     //FIXME: Write documentation on what this function is and what it returns. Then use the executeQuery() method on all values (should be 5)
+        // Run query and take results if exists
+        try {
+            ResultSet resultset = statement.executeQuery(queryMap.get("numOfTransactions"));
+            transactionTypeNumMap.put("numOfTransactions", resultset.getString(1));
+            resultset = statement.executeQuery(queryMap.get("numOfTransactionTypeCalls"));
+            transactionTypeNumMap.put("numOfTransactionTypeCalls", resultset.getString(1));
+            resultset = statement.executeQuery(queryMap.get("percentOfTransactionTypeCalls"));
+            transactionTypeNumMap.put("percentOfTransactionTypeCalls", resultset.getString(1));
+            resultset = statement.executeQuery(queryMap.get("averageAmountOfTransactionType"));
+            transactionTypeNumMap.put("averageAmountOfTransactionType", resultset.getString(1));
+            resultset = statement.executeQuery(queryMap.get("percentAmountOfTransactionType"));
+            transactionTypeNumMap.put("percentAmountOfTransactionType", resultset.getString(1));
+            return transactionTypeNumMap;
         } catch (SQLException ex) {
             Logger logger = Logger.getLogger(AccountsHandler.class.getName());
             logger.log(Level.SEVERE, ex.getMessage(), ex);
