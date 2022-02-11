@@ -7,7 +7,7 @@ public class DataHandler {
     /**
      * Runs methods to format String inputs for end user 
      * 
-     * @param myString: Input string to be formatted
+     * @param myString Input string to be formatted
      * @return
      */
     public static String beautifier(String myString) {
@@ -25,7 +25,7 @@ public class DataHandler {
     /**
      * Assure String is in money format with 2 decimal places
      * 
-     * @param myString: Input string from chosen ATM Menu option
+     * @param myString Input string from chosen ATM Menu option
      * @return
      */
     private static String twoDecimalFormat(String myString) {
@@ -41,7 +41,7 @@ public class DataHandler {
     /**
      * Prefix dollar sign to money
      * 
-     * @param myString: Input string from chosen ATM Menu option
+     * @param myString Input string from chosen ATM Menu option
      * @return
      */
     private static String addCommasToMoneyFormat(String myString) {
@@ -73,7 +73,7 @@ public class DataHandler {
     /**
      * Removes the comment character from a string
      * 
-     * @param myString: Input string from chosen ATM Menu option data
+     * @param myString Input string from chosen ATM Menu option data
      * @return
      */
     private static String removeCommentChar(String myString) {
@@ -86,22 +86,25 @@ public class DataHandler {
     /**
      * Check if user input is valid for money transactions or contains invalid characters
      * 
-     * @param input: User input for expected money format
+     * @param input User input for expected money format
      * @return
      */
     public static boolean checkValidMoneyInput(String input) {
         // Check if input is not only numbers or contains more than 2 digits after decimal
-        if (!input.toLowerCase().matches("[0-9]+[.]*[0-9]*") ||
-            input.substring(input.indexOf(".")+1).length() > 2) return false;
-        else return true;
+        if (!input.toLowerCase().matches("[0-9]*[.]*[0-9]*"))
+            return false;
+        else if (input.contains("."))
+            if (input.substring(input.indexOf(".") + 1).length() > 2)
+                return false;
+        return true;
     }
 
     /**
      * Closes csv file if exists and exits program if input is "quit"
      * 
-     * @param input: User input
-     * @param csv: Current accounts.csv object
-     * @param csvOpen: Whether csv file has been opened or not
+     * @param input User input
+     * @param csv Current accounts.csv object
+     * @param csvOpen Whether csv file has been opened or not
      * @throws IOException
      */
     public static void checkInputForQuit(String input, CSVFileHandler csv, boolean csvOpen) throws IOException {

@@ -6,25 +6,6 @@ import java.util.Map;
 /**
  * Controls the ATM options chosen by the user
  */
-
-// Quit
-// Withdraw
-// Deposit
-// Transfer
-// Different Accounts (work on this after other functionality)
-// Transaction History
-// Maintain the last 30 transactions and use for statistical information
-// Show transactions from greatest to smallest and have an option that does the
-// reverse
-// Show greatest withdrawl
-// Show greatest deposit
-// Account Stats (use last 30 transactions)
-// Show the average withdrawn
-// Show the average of Deposited
-// Show percentage of money deposited vs overall funds at that time
-// Show percentage of money withrawn vs overall funds at that time
-// Percentage of withdraws vs deposits
-// Settings?
 public class ATMMenu {
     /**
      * When the balance has been changed by either withdrawal or deposit

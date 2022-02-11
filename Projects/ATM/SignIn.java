@@ -1,5 +1,3 @@
-// Add to checkRequirements()
-
 /**
  * This class confirms the user's correct username and PIN has been entered.
  */

@@ -1,7 +1,3 @@
-// Things to fix:
-// Read the accounts.csv does not read in comments.
-// Removing a line from accounts.csv, requires all information to be rewritten. This will lose all the comments
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -16,21 +12,32 @@ import java.util.LinkedHashMap;
  * Reads/writes to/from CSV files
  */
 public class CSVFileHandler {
-    // Directory of all CSV files
-    public String csvPath = System.getProperty("user.dir")+"\\ATM\\csv files\\";
-    // Location of a CSV file that holds all username and pin data for every user
-    final String ACCOUNTSCSV = csvPath+"accounts.csv";
+    /**
+     * Directory of all CSV files.
+     */
+    final String CSVPATH = System.getProperty("user.dir")+"\\csv files\\";
+
+    /**
+     * Location of a CSV file that holds all username and pin data for every user.
+     */
+    final String ACCOUNTSCSV = CSVPATH+"accounts.csv";
     
+    /**
+     * An immutable comma character ({@code ,}) used as a delimiter when splitting
+     * read data from a csv file.
+     */
     private static final String COMMA_DELIMITER = ",";
+    
     /**
      * Holds all the accounts.csv data in username:pin format
      * All data will be manipulated here and added to file at end
-     * of transaction
+     * of transaction.
      */
     Map<String,String> accountRecordsMap = new LinkedHashMap<String,String>();
+    
     /**
      * Holds all the <user>.csv data in a list of transactions that hold an array of
-     * transactionID,transactionType,amount,balance
+     * {@code transactionID,transactionType,amount,balance}.
      */
     ArrayList<String[]> userRecordsList = new ArrayList<String[]>();
     
@@ -38,7 +45,9 @@ public class CSVFileHandler {
 
     static boolean csvOpen = false;
 
-    // Manually put it the username and pin to account for comment in map
+    /**
+     * Manually put it the username and pin to account for comment in map.
+     */
     public CSVFileHandler() {}
     
     /**
@@ -68,29 +77,44 @@ public class CSVFileHandler {
     }
     
     /**
-     * Reads accounts.csv file and fills values within hashmap
+     * Reads accounts.csv file and fills values within hashmap. Uses
+     * Using BufferedReader instead of Scanner class for better
+     * efficiency reading line by line.
      * 
      * @param filename
      * @throws FileNotFoundException
      * @throws IOException
      */
-    private void readAccountsCSV() throws FileNotFoundException, IOException {          // Set this up to read any csv file to work for both accountCSV and UserCSV      
-        /**
-        * Using BufferedReader instead of Scanner class for better
-        * efficiency reading line by line
-        */ 
-        try (BufferedReader br = new BufferedReader(new FileReader(ACCOUNTSCSV))) {
-            String line;
-            while ((line = br.readLine()) != null) {
-                String[] values = line.split(COMMA_DELIMITER);
-                accountRecordsMap.put(values[0],values[1]);
+    private void readAccountsCSV() throws FileNotFoundException, IOException {          //FIXME: Set this up to read any csv file to work for both accountCSV and UserCSV      
+        File accountCSVFile = new File(ACCOUNTSCSV);
+        if (accountCSVFile.exists()) {
+            try (BufferedReader br = new BufferedReader(new FileReader(ACCOUNTSCSV))) {
+                String line;
+                while ((line = br.readLine()) != null) {
+                    String[] values = line.split(COMMA_DELIMITER);
+                    accountRecordsMap.put(values[0],values[1]);
+                }
+                br.close();
             }
-            br.close();
+        } else {
+            try {
+                // Check if accounts.csv file directory exists
+                File directory = new File(CSVPATH);
+                if (!directory.exists())
+                    directory.mkdirs();
+                // Create accounts.csv file
+                fw = new FileWriter(ACCOUNTSCSV);
+                fw.write("#username,pin\n");
+                fw.flush();
+                fw.close();
+            } catch (Exception e) {
+                //"error, couldn't write to filepath" + ACCOUNTSCSV
+            }
         }
     }
 
     /**
-     * Reads accounts.csv file and fills values within hashmap
+     * Reads accounts.csv file and fills values within hashmap.
      * 
      * @param accountDetails
      * @throws FileNotFoundException
@@ -98,7 +122,7 @@ public class CSVFileHandler {
      */
     private boolean readUserCSV(Map<String,String> accountDetails) throws FileNotFoundException, IOException {
         // Location <user>.csv, which holds all transactional data for a specific user
-        String userCSV = csvPath + accountDetails.get("username")+".csv";
+        String userCSV = CSVPATH + accountDetails.get("username")+".csv";
         
         /**
         * Using BufferedReader instead of Scanner class for better
@@ -121,7 +145,7 @@ public class CSVFileHandler {
     }
 
     /**
-     * Write all new transactions to <user>.csv file
+     * Write all new transactions to <user>.csv file.
      * 
      * @param accountDetails
      * @param currentTransaction
@@ -132,7 +156,7 @@ public class CSVFileHandler {
         // Gets array from userRecordsList
         String[] tempArray;
         // Location <user>.csv, which holds all transactional data for a specific user
-        String userCSV = csvPath + accountDetails.get("username")+".csv";
+        String userCSV = CSVPATH + accountDetails.get("username")+".csv";
 
         if (userRecordsList.size() == 31) 
             // Removes last transaction (#30)
@@ -181,7 +205,7 @@ public class CSVFileHandler {
 
     /**
      * Appends account username and pin to the end of accounts.csv
-     * in csv format
+     * in csv format.
      * 
      * @param accountDetails
      * @throws FileNotFoundException
@@ -202,7 +226,7 @@ public class CSVFileHandler {
     }
 
     /**
-     * Creates <user>.csv file
+     * Creates <user>.csv file.
      * 
      * @param accountDetails
      * @throws FileNotFoundException
@@ -210,7 +234,7 @@ public class CSVFileHandler {
      */
     private void createUserCSV(Map<String,String> accountDetails) throws FileNotFoundException, IOException {
         // Location <user>.csv, which holds all transactional data for a specific user
-        String userCSV = csvPath + accountDetails.get("username")+".csv";
+        String userCSV = CSVPATH + accountDetails.get("username")+".csv";
         
         try {
             File file = new File(userCSV);
@@ -227,7 +251,7 @@ public class CSVFileHandler {
     }
 
      /**
-     * Removes an account username and pin from accounts.csv
+     * Removes an account username and pin from accounts.csv.
      * 
      * @param accountDetails
      */
@@ -251,13 +275,13 @@ public class CSVFileHandler {
     }
 
     /**
-     * Delete <user>.csv file
+     * Delete <user>.csv file.
      * 
      * @param accountDetails
      */
     private void removeFromUserCSV(Map<String,String> accountDetails) {
         // Location <user>.csv, which holds all transactional data for a specific user
-        String userCSV = csvPath + accountDetails.get("username")+".csv";
+        String userCSV = CSVPATH + accountDetails.get("username")+".csv";
         File file = new File(userCSV);
           
         if (file.delete())
