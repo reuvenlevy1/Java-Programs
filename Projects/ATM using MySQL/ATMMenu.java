@@ -5,7 +5,7 @@ import java.util.Map;
 
 /**
  * The {@code ATMMenu} class controls the ATM options chosen by the user.
- * These options consist of 7 method options:
+ * These consist of 7 options:
  * <p>{@code 1. Withdraw}               Withdraw money from account
  * <p>{@code 2. Deposit}                Deposit money into account
  * <p>{@code 3. Transfer}               Transfer money from 1 account type to another
@@ -192,12 +192,12 @@ public class ATMMenu {
                     Messages.transactionHistoryMessage(userTransHistory);
                     System.out.println("\n" + Messages.exitMessage() + "\n\n");
                     break;
-                } else if (selection.equals(ACCOUNT_STATS_NUM) || selection.equals(ACCOUNT_STATS)) {
+                } else if (selection.equals(ACCOUNT_STATS_NUM) || selection.equals(ACCOUNT_STATS)) {                        //FIXME: Currently working on this method   -   All this should do is return a table/message of all statistical information gathered
                     System.out.println(ACCOUNT_STATS.toUpperCase() + "\n" + Messages.returnToATMMenuMessage());
                     // Take you to ACCOUNT_STATS
                     System.out.println(Messages.atmMenuIncompleteMessage());
                     break;
-                } else if (selection.equals(CHANGE_PIN_NUM) || selection.equals(CHANGE_PIN)) {      //FIXME - Finish implementing
+                } else if (selection.equals(CHANGE_PIN_NUM) || selection.equals(CHANGE_PIN)) {
                     System.out.println(CHANGE_PIN.toUpperCase() + "\n" + Messages.returnToATMMenuMessage());
                     System.out.println(Messages.changePINConfirmationMessage());
                     String confirmUserInput = Main.userInput.nextLine().trim();
@@ -276,6 +276,12 @@ public class ATMMenu {
 
         if (modifyBalance_flag) {
             db.addTransactionToUserTable(
+                accountDetails.get("username"),
+                transactionID,
+                transactionType,
+                amount,
+                balance);
+            db.addTransactionToEveryTransactionTable(               //FIXME: test!
                 accountDetails.get("username"),
                 transactionID,
                 transactionType,

@@ -5,10 +5,10 @@ import java.util.Map;
 
 /**
  * The {@code AdminATMMenu} class controls the ATM options chosen by the admin.
- * These options consist of 4 method options:
+ * These consist of 4 options:
  * <p>{@code 1. Add Account}                  Add a new user
  * <p>{@code 2. User Transaction History}     Get a user's full transaction history
- * <p>{@code 3. Change User PIN}              Change a user's PIN from a list of users     //FIXME: adding
+ * <p>{@code 3. Change User PIN}              Change a user's PIN from a list of users
  * <p>{@code 4. DELETE ACCOUNT}               Delete a user
  * <p>{@code 5. Sign Out}                     Sign out of admin account
  * 
@@ -127,17 +127,11 @@ public class AdminATMMenu {
                     }
 
                     if (validRequirements && notDuplicate) {
-                        // Add new user to accounts.csv and create their own table
+                        // Add new user to Account_Table_Name (atm_details.ini) table and create <username> table
                         db.createUser(newAccountDetails.get("username"),
                             newAccountDetails.get("pin"));
-
                         // CSVFileHandler.csvOpen = true;
                         accountAdded = true;
-                        System.out.println();
-                        System.out.println(
-                                Messages.adminAccountCreatedMessage() + "\n"
-                                + Messages.exitMessage() + "\n\n");
-                        break;
                     }
                 } else if (selection.equals(USER_TRANSACTION_HISTORY_NUM) || selection.equals(
                     USER_TRANSACTION_HISTORY)) {
@@ -180,7 +174,7 @@ public class AdminATMMenu {
                                 // Check if username exists from list of usernames
                                 if (userList.stream().anyMatch(username::equalsIgnoreCase)) {
                                     validUsernameRequirements = true;
-                                    break;
+                                    break;                                                                              //FIXME: test to see if this should remain or be deleted
                                 } else
                                     // Error message
                                     System.out.println(Messages.usernameErrorMessage() + "\n");
@@ -205,7 +199,7 @@ public class AdminATMMenu {
                                 // Check if maxTransactionsNum is a number
                                 if (DataHandler.checkNumRequirements(maxTransactionsNum)) {             //FIXME: put an or statement to set a limit with this data?
                                     validTransNumRequirements = true;
-                                    break;
+                                    break;                                                              //FIXME: test to see if this should remain or be deleted
                                 } else
                                     // Error message
                                     System.out.println(Messages.invalidNumInput() + "\n");
@@ -223,8 +217,8 @@ public class AdminATMMenu {
                             userTransHistory = db.getUserTransactionHistory(username, 30);                                                                      //FIXME: currently put 30 instead of variable. When above is fixed, delete this line
                             // Print transaction history starting with most recent
                             Messages.transactionHistoryMessage(userTransHistory);
-                            System.out.println("\n" + Messages.exitMessage() + "\n\n");
-                            break;
+                            // System.out.println("\n" + Messages.exitMessage() + "\n\n");
+                            // break;
                     }
                 } else if (selection.equals(CHANGE_USER_PIN_NUM) || selection.toLowerCase().equals(CHANGE_USER_PIN)) {
                     String username = "";
@@ -263,7 +257,7 @@ public class AdminATMMenu {
                             if (errorMap.get("noErrors")) {
                                 // Check if username exists from list of usernames
                                 if (userList.stream().anyMatch(username::equalsIgnoreCase)) {
-                                    break;
+                                    break;                                                                  //FIXME: test to see if this should remain or be deleted
                                 } else
                                     // Error message
                                     System.out.println(Messages.usernameErrorMessage() + "\n");
@@ -297,7 +291,7 @@ public class AdminATMMenu {
                                 // Check if PIN requirements contained no errors
                                 if (errorMap.get("noErrors")) {
                                     changePINIsValid = true;
-                                    break;
+                                    break;                                                                                              //FIXME: test to see if this should remain or be deleted
                                 } else {
                                     // Error message that lists requirement errors
                                     System.out.println(Messages.accountCheckRequirementsErrorMessage(errorMap,
@@ -322,21 +316,21 @@ public class AdminATMMenu {
                                 if (confirmUserPIN.equals(newPIN)) {
                                     if (db.changeUserPIN(username, newPIN)) { //FIXME
                                         System.out.println("\n" + Messages.changePINSuccessMessage());
-                                        break;
+                                        break;                                                                                  //FIXME: test to see if this should remain or be deleted
                                     } else
                                         // Error message
                                         System.out.println(Messages.changePINErrorMessage());
                                 } else 
                                     // Error message saying the PINs don't match
                                     System.out.println(Messages.changePINConfirmFailMessage());
-                                    break;
+                                    break;                                                                                      //FIXME: test to see if this should remain or be deleted
                             }
                         }
                     } else
                         // Error message saying the account name does not exist in the DB
                         System.out.println(Messages.adminSelectUsernameToChangePINDoesNotExist());
-                    System.out.println("\n" + Messages.exitMessage() + "\n\n");
-                    break;
+                    // System.out.println("\n" + Messages.exitMessage() + "\n\n");
+                    // break;
 
                 } else if (selection.equals(DELETE_ACCOUNT_NUM) || selection.toLowerCase().equals(DELETE_ACCOUNT)) {
                     String username = "";
@@ -370,7 +364,7 @@ public class AdminATMMenu {
                             if (errorMap.get("noErrors")) {
                                 // Check if username exists from list of usernames
                                 if (userList.stream().anyMatch(username::equalsIgnoreCase)) {
-                                    break;
+                                    break;                                                                                      //FIXME: test to see if this should remain or be deleted
                                 } else
                                     // Error message
                                     System.out.println(Messages.usernameErrorMessage() + "\n");
@@ -398,58 +392,29 @@ public class AdminATMMenu {
                             if (confirmUsername.toLowerCase().equals(username)) {
                                 // boolean on the status of the account being deleted
                                 if (db.deleteUserAccount(username)) {
-                                    System.out.println(Messages.accountDeletedMessage(username));
-                                    break;
+                                    System.out.println(Messages.accountDeletedMessage(username) + "\n");
+                                    // break;
                                 } else
                                     // Error message
                                     System.out.println(Messages.accountDeletionErrorMessage(username));
                             } else {
                                 // Error message
                                 System.out.println(Messages.accountDeleteConfirmFailMessage());
-                                break;
+                                // break;
                             }
                         }
-                        System.out.println("\n" + Messages.exitMessage() + "\n\n");
-                        break;
+                        // System.out.println("\n" + Messages.exitMessage() + "\n\n");
+                        // break;
                     } else
                         // Error message saying the account name does not exist in the DB
                         System.out.println(Messages.adminSelectUsernameToChangePINDoesNotExist());
-                    System.out.println("\n" + Messages.exitMessage() + "\n\n");
-                    break;
-
-                /*  OLD CODE
-                    System.out.println(DELETE_ACCOUNT.toUpperCase() + "\n" + Messages.returnToATMMenuMessage());
-                    // FIXME: Finish implementation
-                    // List all available usernames
-                    db.listUsernames(); // FIXME: Need to add this to a single table with a title set in Messages class: "List of Current Users"
-
-                    // Confirm account deletion
-                    System.out.print(Messages.userAccountDeleteMessage());
-                    String confirmUserInput = Main.userInput.nextLine().trim();
-                    
-                    // Check admin input
-                    if (confirmUserInput.toLowerCase().equals(BACK.toLowerCase()) || !DataHandler.checkInput(confirmUserInput, db))
-                        break;
-
-                    // Checks if username matches confirmation user input
-                    if (confirmUserInput.toLowerCase().equals(accountDetails.get("username").toLowerCase())) {
-                        // boolean on the status of the account being deleted
-                        if (db.deleteUserAccount(accountDetails.get("username")))
-                            System.out.println(Messages.accountDeletedMessage(accountDetails.get("username")));
-                        else
-                            // Error message
-                            System.out.println(Messages.accountDeletionErrorMessage(accountDetails.get("username")));
-                    } else
-                        // Error message
-                        System.out.println(Messages.accountDeleteConfirmFailMessage());
-                    System.out.println("\n" + Messages.exitMessage() + "\n\n");
-                    break;
-                */
+                    // System.out.println("\n" + Messages.exitMessage() + "\n\n");
+                    // break;
                 } else if (selection.equals(SIGN_OUT_NUM) || selection.equals(SIGN_OUT)) {
                     // SIGN OUT from account
                     System.out.println(SIGN_OUT.toUpperCase() + "\n" + Messages.signOutMessage()
                         + "\n");
-                    break;
+                    break;                                                                                              //FIXME: test to see if this should remain or be deleted
                 } else {
                     // Error message
                     System.out.println(Messages.atmMenuInvalidChoiceMessage());

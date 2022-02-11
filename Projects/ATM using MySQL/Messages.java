@@ -20,6 +20,12 @@ public class Messages {
         return "Thank you for choosing Bank of Money!";
     }
 
+    public static String databaseConnectionErrorMessage() {
+        return "Error connecting to the database. Please make sure your database details are set correctly in "
+            + "the atm_details.ini file and that your database is properly installed and running. Then try "
+            + "running the program again.";
+    }
+
     public static String signInUsernameMessage() {
         return "Enter Username: ";
     }
@@ -69,7 +75,7 @@ public class Messages {
         // If username contains an invalid character
         if (errorMap.get("usernameInvalidChar"))
             errorMessage.append("\n   -Username must only be alpha-numerical characters with no "
-                + "special characters");
+                + "special characters or spaces");
         // If username doesn't start with a letter
         if (errorMap.get("usernameFirstCharNotLetter"))
             errorMessage.append("\n   -Username must start with a letter");
@@ -337,5 +343,18 @@ public class Messages {
     public static String fileNotFoundExceptionMessage(String INI_FILEPATH) {
         return "ERROR: The filename " + INI_FILEPATH + " does not exist. Please make sure "
             + INI_FILEPATH + " file was created successfully.";
+    }
+
+    /**
+     * 
+     * 
+     * @param transTypeDepositNum
+     */
+    public static void transactionStatsMessage(Map<String, String> transTypeDepositNum) {
+        // String[] title = new String[]{"Transaction #", "Transaction Type", "Amount", "Balance"};
+        // // Add title to beginning of list
+        // userTransHistory.add(0, title);
+        // System.out.println("Transactions are listed from most recent to oldest.\n");
+        // Printer.printMultipleColTable(userTransHistory);
     }
 }
