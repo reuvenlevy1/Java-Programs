@@ -5,14 +5,14 @@ import java.util.Map;
 
 /**
  * The {@code ATMMenu} class controls the ATM options chosen by the user.
- * These consist of 7 options:
- * <p>{@code 1. Withdraw}               Withdraw money from account
- * <p>{@code 2. Deposit}                Deposit money into account
- * <p>{@code 3. Transfer}               Transfer money from 1 account type to another
- * <p>{@code 4. Transaction History}    Get full transaction history
- * <p>{@code 5. Account Stats}          Get statistical data on account
- * <p>{@code 6. DELETE ACCOUNT}         Delete account
- * <p>{@code 7. Sign Out}               Sign out of user account
+ * This consist of 7 options:
+ * <p>{@code 1. Withdraw}               Withdraw money from account.
+ * <p>{@code 2. Deposit}                Deposit money into account.
+ * <p>{@code 3. Transaction History}    Get full transaction history.
+ * <p>{@code 4. Account Stats}          Get statistical data on account.
+ * <p>{@code 5. Change PIN}             Change PIN.
+ * <p>{@code 6. DELETE ACCOUNT}         Delete account.
+ * <p>{@code 7. Sign Out}               Sign out of user account.
  * 
  * @author Reuven Levy
  * @version 1.0
@@ -26,24 +26,28 @@ public class ATMMenu {
     DatabaseHandler db;
 
     /**
-     * Holds ATM calculation methods
+     * Holds ATM calculation methods.
      */
     ATMDataHandler atmDH = new ATMDataHandler();
 
     /**
-     * Holds account methods used for verifying user input
+     * Holds account methods used for verifying user input.
      */
     AccountsHandler ah;
     
     /**
-     * When the balance has been changed by either withdrawal or deposit
+     * When the balance has been changed by either withdrawal or deposit.
      */
     boolean modifyBalance_flag = false;
+
+    /**
+     * Default maximum number of transactions returned.
+     */
+    final static int DEFAULT_MAX_TRANSACTIONS = Integer.parseInt(ReadINIFile.DEFAULT_MAX_TRANSACTIONS);
     
     // ATM string options
     final static String WITHDRAW = "Withdraw";
     final static String DEPOSIT = "Deposit";
-    final static String TRANSFER = "Transfer";
     final static String TRANSACTION_HISTORY = "Transaction History";
     final static String ACCOUNT_STATS = "Account Stats";
     final static String CHANGE_PIN = "Change PIN";
@@ -52,12 +56,11 @@ public class ATMMenu {
     // ATM number options
     final static String WITHDRAW_NUM = "1";
     final static String DEPOSIT_NUM = "2";
-    final static String TRANSFER_NUM = "3";
-    final static String TRANSACTION_HISTORY_NUM = "4";
-    final static String ACCOUNT_STATS_NUM = "5";
-    final static String CHANGE_PIN_NUM = "6";
-    final static String DELETE_ACCOUNT_NUM = "7";
-    final static String SIGN_OUT_NUM = "8";
+    final static String TRANSACTION_HISTORY_NUM = "3";
+    final static String ACCOUNT_STATS_NUM = "4";
+    final static String CHANGE_PIN_NUM = "5";
+    final static String DELETE_ACCOUNT_NUM = "6";
+    final static String SIGN_OUT_NUM = "7";
     // Other keywords
     final static String BACK = "Back";
     final static String QUIT = "Quit";
@@ -67,17 +70,11 @@ public class ATMMenu {
     final static String[] atmMenuOptions = new String[] {      //FIXME - Add options here when created
         WITHDRAW_NUM + ". " + WITHDRAW,
         DEPOSIT_NUM + ". " + DEPOSIT,
-        TRANSFER_NUM + ". " + TRANSFER,                         //FIXME - Not done
         TRANSACTION_HISTORY_NUM + ". " + TRANSACTION_HISTORY,
-        ACCOUNT_STATS_NUM + ". " + ACCOUNT_STATS,               //FIXME - Not done
+        ACCOUNT_STATS_NUM + ". " + ACCOUNT_STATS,
         CHANGE_PIN_NUM + ". " + CHANGE_PIN,
         DELETE_ACCOUNT_NUM + ". " + DELETE_ACCOUNT,
         SIGN_OUT_NUM + ". " + SIGN_OUT};
-    
-    /**
-     * Default maximum past transactions to show user 
-     */
-    final static int DEFAULT_MAX_TRANS_NUM = 30;            //FIXME: This should be set by the atm_details.ini file
 
     /**
      * Constructor that runs user ATM menu options.
@@ -87,9 +84,12 @@ public class ATMMenu {
      *                          <p>{@code accountDetails["pin"]}
      * @param db                Holds database connection information and other database
      *                          related methods for executing queries.
+     * @param sh                FIXME
      */
-    ATMMenu(Map<String, String> accountDetails, DatabaseHandler db, AccountsHandler ah) {
+    ATMMenu(Map<String, String> accountDetails, DatabaseHandler db, AccountsHandler ah, StatsHandler sh) {
         this.db = db;
+        String username = accountDetails.get("username");
+        String pin = accountDetails.get("pin");
         int transactionID=1;
         // ATM Transaction menu selection name
         String transactionType = "";
@@ -110,7 +110,7 @@ public class ATMMenu {
                     modifyBalance_flag = false;
 
                     // Use query to pull latest user transaction data
-                    String userBalance = db.getLatestUserBalance(accountDetails.get("username"));
+                    String userBalance = db.getLatestUserBalance(username);
                     
                     // Compare data to being greater than 1
                     if (userBalance.length() > 1) {
@@ -141,14 +141,14 @@ public class ATMMenu {
                         } else
                             System.out.println(Messages.withdrawNewAccountMessage());
                     } else
-                        System.out.println(Messages.withdrawEmptyDBMessage(accountDetails.get("username")));
+                        System.out.println(Messages.withdrawEmptyDBMessage(username));
                 } else if (selection.equals(DEPOSIT_NUM) || selection.equals(DEPOSIT)) {
                     System.out.println(DEPOSIT.toUpperCase() + "\n" + Messages.returnToATMMenuMessage());
                     transactionType = DEPOSIT;
                     modifyBalance_flag = false;
 
                     // Use query to pull latest user transaction data
-                    String userBalance = db.getLatestUserBalance(accountDetails.get("username"));
+                    String userBalance = db.getLatestUserBalance(username);
                     
                     // Compare data to being greater than 1
                     if (userBalance.length() > 1) {
@@ -176,26 +176,46 @@ public class ATMMenu {
                         }
                     } else
                         System.out.println(Messages.depositNewAccountMessage());
-                } else if (selection.equals(TRANSFER_NUM) || selection.equals("transfer")) {
-                    System.out.println("TRANSFER\n" + Messages.returnToATMMenuMessage());
-                    // Take you to TRANSFER
-                    // transfer(amount);
-                    System.out.println(Messages.atmMenuIncompleteMessage());
-                    break;
-                } else if (selection.equals(TRANSACTION_HISTORY_NUM) || selection.equals(TRANSACTION_HISTORY)) {                                    //FIXME
+                } else if (selection.equals(TRANSACTION_HISTORY_NUM) || selection.equals(TRANSACTION_HISTORY)) {
                     System.out.println(TRANSACTION_HISTORY.toUpperCase() + "\n" + Messages.returnToATMMenuMessage());
-                    // FIXME: Ask user for maxTransactionsNum --> Maximum number of transactions to return
-                    // Use query to pull last DEFAULT_MAX_TRANS_NUM records of user transaction data
+                    // Use query to pull last DEFAULT_MAX_TRANSACTIONS records of user transaction data
                     ArrayList<String[]> userTransHistory =
-                        db.getUserTransactionHistory(accountDetails.get("username"), DEFAULT_MAX_TRANS_NUM);                                        //FIXME: Should only use the default IF no transaction was specified!
+                        db.getUserTransactionHistory(username, DEFAULT_MAX_TRANSACTIONS);
                     // Print transaction history starting with most recent
                     Messages.transactionHistoryMessage(userTransHistory);
                     System.out.println("\n" + Messages.exitMessage() + "\n\n");
                     break;
-                } else if (selection.equals(ACCOUNT_STATS_NUM) || selection.equals(ACCOUNT_STATS)) {                        //FIXME: Currently working on this method   -   All this should do is return a table/message of all statistical information gathered
+                } else if (selection.equals(ACCOUNT_STATS_NUM) || selection.equals(ACCOUNT_STATS)) {
                     System.out.println(ACCOUNT_STATS.toUpperCase() + "\n" + Messages.returnToATMMenuMessage());
-                    // Take you to ACCOUNT_STATS
-                    System.out.println(Messages.atmMenuIncompleteMessage());
+                    String maxTransactionsNum = "";
+                    boolean validTransNumRequirements = false;
+                    // Ask the admin for a number of transactions that should be returned
+                    System.out.println(Messages.accountTransNumMessage());
+                    while (true) {
+                        maxTransactionsNum = Main.userInput.nextLine().trim();
+                        // Check admin input
+                        if (maxTransactionsNum.toLowerCase().equals(BACK.toLowerCase()))
+                            break;
+                        if (DataHandler.checkInputAllowEmpty(maxTransactionsNum, db)) {
+                            // Check if maxTransactionsNum is a number
+                            if (DataHandler.checkNumRequirements(maxTransactionsNum)) {
+                                validTransNumRequirements = true;
+                                break;
+                            } else
+                                // Error message
+                                System.out.println(Messages.invalidNumInput() + "\n");
+                        }
+                    }
+                    
+                    if (validTransNumRequirements) {
+                        if (!maxTransactionsNum.isEmpty())
+                            // Print account stats
+                            sh.getUserStats(username, maxTransactionsNum);
+                        else
+                            // Print account stats default
+                            sh.getUserStats(username, Integer.toString(DEFAULT_MAX_TRANSACTIONS));
+                    }
+                    System.out.println("\n" + Messages.exitMessage() + "\n\n");
                     break;
                 } else if (selection.equals(CHANGE_PIN_NUM) || selection.equals(CHANGE_PIN)) {
                     System.out.println(CHANGE_PIN.toUpperCase() + "\n" + Messages.returnToATMMenuMessage());
@@ -206,7 +226,7 @@ public class ATMMenu {
                         break;
 
                     // Checks if username matches confirmation user input
-                    if (confirmUserInput.equals(accountDetails.get("pin"))) {
+                    if (confirmUserInput.equals(pin)) {
                         while (true) {
                             // Get new PIN
                             System.out.println(Messages.changePINToNewPINMessage());
@@ -221,7 +241,7 @@ public class ATMMenu {
                             // Check if PIN requirements contained no errors
                             if (errorMap.get("noErrors")) {
                                 // boolean on the status of the account being deleted
-                                if (db.changeUserPIN(accountDetails.get("username"), newPIN)) {
+                                if (db.changeUserPIN(username, newPIN)) {
                                     System.out.println("\n" + Messages.changePINSuccessMessage());
                                     break;
                                 } else
@@ -249,13 +269,13 @@ public class ATMMenu {
                         break;
 
                     // Checks if username matches confirmation user input
-                    if (confirmUserInput.toLowerCase().equals(accountDetails.get("username").toLowerCase())) {
+                    if (confirmUserInput.toLowerCase().equals(username.toLowerCase())) {
                         // boolean on the status of the account being deleted
-                        if (db.deleteUserAccount(accountDetails.get("username")))
-                            System.out.println(Messages.accountDeletedMessage(accountDetails.get("username")));
+                        if (db.deleteUserAccount(username))
+                            System.out.println(Messages.accountDeletedMessage(username));
                         else
                             // Error message
-                            System.out.println(Messages.accountDeletionErrorMessage(accountDetails.get("username")));
+                            System.out.println(Messages.accountDeletionErrorMessage(username));
                     } else
                         // Error message
                         System.out.println(Messages.accountDeleteConfirmFailMessage());
@@ -276,13 +296,13 @@ public class ATMMenu {
 
         if (modifyBalance_flag) {
             db.addTransactionToUserTable(
-                accountDetails.get("username"),
+                username,
                 transactionID,
                 transactionType,
                 amount,
                 balance);
-            db.addTransactionToEveryTransactionTable(               //FIXME: test!
-                accountDetails.get("username"),
+            db.addTransactionToEveryTransactionTable(
+                username,
                 transactionID,
                 transactionType,
                 amount,

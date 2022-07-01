@@ -10,9 +10,9 @@ public class ATMDataHandler {
     /**
      * Withdraws funds from user account.
      * 
-     * @param amount    user input of amount to withdraw
-     * @param balance   current balance of account
-     * @return          new balance after withdrawal
+     * @param amount    User input of amount to withdraw.
+     * @param balance   Current balance of account.
+     * @return          New balance after withdrawal.
      */
     public double withdraw(double amount, double balance) {
         return withdrawFromAccount(amount, balance);
@@ -21,9 +21,9 @@ public class ATMDataHandler {
     /**
      * Private method that withdraws funds from user account.
      * 
-     * @param amount    user input of amount to withdraw
-     * @param balance   current balance of account
-     * @return          new balance after withdrawal
+     * @param amount    User input of amount to withdraw.
+     * @param balance   Current balance of account.
+     * @return          New balance after withdrawal.
      */
     private double withdrawFromAccount(double amount, double balance) {
         if (amount >= 0.01) {
@@ -41,9 +41,9 @@ public class ATMDataHandler {
     /**
      * Deposits funds to user account.
      * 
-     * @param amount    user input of amount to deposit
-     * @param balance   current balance of account
-     * @return          new balance after deposit
+     * @param amount    User input of amount to deposit.
+     * @param balance   Current balance of account.
+     * @return          New balance after deposit.
      */
     public double deposit(double amount, double balance) {
         return depositToAccount(amount, balance);
@@ -52,9 +52,9 @@ public class ATMDataHandler {
     /**
      * Private method that deposits funds to user account.
      * 
-     * @param amount    user input of amount to deposit
-     * @param balance   current balance of account
-     * @return          new balance after deposit
+     * @param amount    User input of amount to deposit.
+     * @param balance   Current balance of account.
+     * @return          New balance after deposit.
      */
     private double depositToAccount(double amount, double balance) {
         if (amount >= 0.01) {
@@ -64,13 +64,4 @@ public class ATMDataHandler {
         }
         return -1;
     }
-
-    // private double transfer(double amount) {
-    // return 0.0;
-    // }
-
-    // private double accountStats() {
-    // return 0.0;
-    // }
-
 }

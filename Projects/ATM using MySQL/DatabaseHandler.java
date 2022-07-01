@@ -23,15 +23,52 @@ public class DatabaseHandler {
     Connection connect = null;
     Statement statement = null;
     
+    // Table names
     /**
      * Table name for accounts.
      */
-    final static String ACCOUNT_TABLE = ReadINIFile.ACCOUNT_TABLE;
+    final static String ACCOUNT_TABLE = "account";
 
     /**
      * Table name for all user transactions.
      */
-    final static String EVERY_TRANSACTION_TABLE = ReadINIFile.EVERY_TRANSACTION_TABLE;
+    final static String EVERY_TRANSACTION_TABLE = "every_transaction";
+
+    // Column names
+    /**
+     * Column name for user account ID.
+     */
+    final static String ACCOUNT_ID_COLUMN = "account_id";
+
+    /**
+     * Column name for username.
+     */
+    final static String USERNAME_COLUMN = "username";
+
+    /**
+     * Column name for PIN.
+     */
+    final static String PIN_COLUMN = "pin";
+
+    /**
+     * Column name for transaction ID.
+     */
+    final static String TRANSACTION_ID_COLUMN = "transaction_id";
+    
+    /**
+     * Column name for transaction type.
+     */
+    final static String TRANSACTION_TYPE_COLUMN = "transaction_type";
+    
+    /**
+     * Column name for amount.
+     */
+    final static String AMOUNT_COLUMN = "amount";
+
+    /**
+     * Column name for balance.
+     */
+    final static String BALANCE_COLUMN = "balance";
     
     /**
      * Max username length.
@@ -62,14 +99,14 @@ public class DatabaseHandler {
     /**
      * Constructor that creates database connection.
      */
-    public DatabaseHandler() {              //FIXME: take in from a .ini file
+    public DatabaseHandler() {
         String mysqlURL = ReadINIFile.MYSQL_URL;
         String dbUser = ReadINIFile.DB_USERNAME;
         String dbPass = ReadINIFile.DB_PASSWORD;
         try {
             connect = DriverManager.getConnection(mysqlURL, dbUser, dbPass);
             if (connect != null) {
-                System.out.println("Database connection is successful\n");            //FIXME: Move message to Messages.java class
+                System.out.println(Messages.dbConnectionMessage());
                 statement = connect.createStatement();
             }
         } catch (Exception e) {
@@ -81,14 +118,14 @@ public class DatabaseHandler {
     /**
      * Creates a new user if the username doesn't exist.
      *
-     * @param username  Account username
-     * @param pin       Account PIN
+     * @param username  Account username.
+     * @param pin       Account PIN.
      */
     public void createUser(String username, String pin) {
       
         // All tables will be created if they don't exist
         createAccountTable();
-        createEveryTransactionTable();                       //FIXME
+        createEveryTransactionTable();
         addUserToAccountTable(username, pin);
         createUserTable(username);
         // Adds an initial transaction to the user table
@@ -99,11 +136,11 @@ public class DatabaseHandler {
     /**
      * Adds the new user to the {@code ACCOUNT_TABLE} table.
      * 
-     * @param username  Account username
-     * @param pin       Account PIN
+     * @param username  Account username.
+     * @param pin       Account PIN.
      */
     private void addUserToAccountTable(String username, String pin) {
-        String query = DBQueries.addUserToAccountTableQuery(username, AES256.encrypt(pin), ACCOUNT_TABLE);
+        String query = DBQueries.addUserToAccountTableQuery(username, AES256.encrypt(pin), ACCOUNT_TABLE, USERNAME_COLUMN, PIN_COLUMN);
         // Run query
         try {
             statement.executeUpdate(query);
@@ -114,11 +151,11 @@ public class DatabaseHandler {
     }
 
     /**
-     * Creates the {@code ACCOUNT_TABLE} table in DB
+     * Creates the {@code ACCOUNT_TABLE} table in DB.
      */
     private void createAccountTable() {
         // Create table if doesn't exist
-        String query = DBQueries.createAccountTableQuery(ACCOUNT_TABLE);
+        String query = DBQueries.createAccountTableQuery(ACCOUNT_TABLE, ACCOUNT_ID_COLUMN, USERNAME_COLUMN, PIN_COLUMN);
         try {
             statement.execute(query);
         } catch (SQLException e) {
@@ -127,11 +164,11 @@ public class DatabaseHandler {
     }
 
     /**
-     * 
+     * FIXME
      */
     private void createEveryTransactionTable() {
         // Create table if doesn't exist
-        String query = DBQueries.createEveryTransactionTableQuery(EVERY_TRANSACTION_TABLE, MAX_USERNAME_LEN);
+        String query = DBQueries.createEveryTransactionTableQuery(MAX_USERNAME_LEN, EVERY_TRANSACTION_TABLE, TRANSACTION_ID_COLUMN, USERNAME_COLUMN, TRANSACTION_TYPE_COLUMN, AMOUNT_COLUMN, BALANCE_COLUMN);
         try {
             statement.execute(query);
         } catch (SQLException e) {
@@ -140,11 +177,12 @@ public class DatabaseHandler {
     }
 
     /**
+     * FIXME
      * 
      * @param username  Account username
      */
     private void createUserTable(String username) {
-        String query = DBQueries.createUserTableQuery(username);
+        String query = DBQueries.createUserTableQuery(username, TRANSACTION_ID_COLUMN, TRANSACTION_TYPE_COLUMN, AMOUNT_COLUMN, BALANCE_COLUMN);
         try {
             statement.execute(query);
         } catch (SQLException e) {
@@ -153,8 +191,10 @@ public class DatabaseHandler {
     }
 
     /**
+     * FIXME
      * 
-     * @param username          Account username
+     * @param username
+     * @param transactionID
      * @param transactionType
      * @param amount
      * @param balance
@@ -165,7 +205,7 @@ public class DatabaseHandler {
         String updateQuery = DBQueries.updateTransactionIDsQuery(username);
         // Add new transaction
         String addQuery =
-            DBQueries.addTransactionToUserTableQuery(username, transactionID, transactionType, amount, balance);
+            DBQueries.addTransactionToUserTableQuery(username, transactionID, transactionType, amount, balance, TRANSACTION_ID_COLUMN, TRANSACTION_TYPE_COLUMN, AMOUNT_COLUMN, BALANCE_COLUMN);
         // Run queries
         try {
             statement.executeUpdate(updateQuery);
@@ -177,8 +217,10 @@ public class DatabaseHandler {
     }
 
     /**
+     * FIXME
      * 
-     * @param username          Account username
+     * @param username
+     * @param transactionID
      * @param transactionType
      * @param amount
      * @param balance
@@ -189,12 +231,11 @@ public class DatabaseHandler {
         String updateQuery = DBQueries.updateTransactionIDsQuery(EVERY_TRANSACTION_TABLE);
         // Add new transaction
         String addQuery =
-            DBQueries.addTransactionToEveryTransactionTableQuery(
-                EVERY_TRANSACTION_TABLE, transactionID, username, transactionType, amount, balance);
+            DBQueries.addTransactionToEveryTransactionTableQuery(transactionID, username, transactionType, amount, balance, EVERY_TRANSACTION_TABLE,, TRANSACTION_ID_COLUMN, USERNAME_COLUMN, TRANSACTION_TYPE_COLUMN, AMOUNT_COLUMN, BALANCE_COLUMN);
         // Run queries
         try {
             statement.executeUpdate(updateQuery);
-            statement.executeUpdate(addQuery);
+            statement.executeUpdate(addQuery);                                                          //FIXME
         } catch (SQLException ex) {
             Logger logger = Logger.getLogger(AccountsHandler.class.getName());
             logger.log(Level.SEVERE, ex.getMessage(), ex);
@@ -202,12 +243,12 @@ public class DatabaseHandler {
     }
 
     /**
-     * Verify if username and password details entered are correct/incorrect
+     * Verify if username and password details entered are correct/incorrect.
      * 
      * @param accountDetails    {@code Map} that holds username and pin:
      *                          <p>{@code accountDetails["username"]}
      *                          <p>{@code accountDetails["pin"]}
-     * @return                  {@code false} if {@code accountDetails} doesn't exist in database
+     * @return                  {@code false} if {@code accountDetails} doesn't exist in database.
      */
     public boolean verifyAccount(Map<String, String> accountDetails) {
         // verify both username and PIN are valid
@@ -231,10 +272,10 @@ public class DatabaseHandler {
     }
 
     /**
-     * Verify if username details entered are correct/incorrect
+     * Verify if username details entered are correct/incorrect.
      * 
-     * @param username      Account username
-     * @return              {@code false} if {@code accountDetails} doesn't exist in database
+     * @param username  Account username.
+     * @return          {@code false} if {@code accountDetails} doesn't exist in database.
      */
     public boolean verifyUser(String username) {
         // verify username is valid
@@ -257,8 +298,8 @@ public class DatabaseHandler {
     /**
      * Checks if username already exists in ACCOUNT_TABLE.
      * 
-     * @param username  Account username
-     * @return
+     * @param username  Account username.
+     * @return          FIXME
      */
     public boolean checkDupUsers(String username) {
         String query = DBQueries.isDupUsernameQuery(username, ACCOUNT_TABLE);
@@ -284,9 +325,10 @@ public class DatabaseHandler {
     }
 
     /**
+     * FIXME
      * 
-     * @param username  Account username
-     * @return
+     * @param username  Account username.
+     * @return          FIXME
      */
     public String getLatestUserBalance(String username) {
         String query = DBQueries.getLatestUserBalanceQuery(username);
@@ -303,15 +345,15 @@ public class DatabaseHandler {
     }
 
     /**
+     * FIXME
      * 
-     * 
-     * @param username  Account username
-     * @param maxTransNum
-     * @return
+     * @param username              Account username.
+     * @param maxTransactionsNum    Number of transactions returned.
+     * @return                      FIXME
      */
-    public ArrayList<String[]> getUserTransactionHistory(String username, int maxTransNum) {
+    public ArrayList<String[]> getUserTransactionHistory(String username, int maxTransactionsNum, String transactionIDColumn) { //FIXME: RL - added transactionIDColumn, need to add this parameter and other ones to their originating classes
         ArrayList<String[]> transactionList = new ArrayList<>();
-        String query = DBQueries.getUserTransactionListQuery(username, maxTransNum);
+        String query = DBQueries.getUserTransactionListQuery(username, maxTransactionsNum, transactionIDColumn);
         // Run query and take results if exists
         try {
             ResultSet resultset = statement.executeQuery(query);
@@ -332,12 +374,13 @@ public class DatabaseHandler {
     }
 
     /**
-     * Removes username from list of accounts and drops user table
+     * Removes username from list of accounts and drops user table.
      * 
-     * @param username  Account username
+     * @param username  Account username.
+     * @return          FIXME
      */
     public boolean deleteUserAccount(String username) {
-        String accountQuery = DBQueries.deleteUserFromAccountTableQuery(username, ACCOUNT_TABLE);
+        String accountQuery = DBQueries.deleteUserFromAccountTableQuery(username, ACCOUNT_TABLE, USERNAME_COLUMN);
         String userQuery = DBQueries.deleteUserTableQuery(username);
         // Run queries
         try {
@@ -352,11 +395,11 @@ public class DatabaseHandler {
     }
     
     /**
-     * Change the PIN of the entered username
+     * Change the PIN of the entered username.
      * 
-     * @param username  Account username
-     * @param pin       Account PIN
-     * @return
+     * @param username  Account username.
+     * @param pin       Account PIN.
+     * @return          FIXME
      */
     public boolean changeUserPIN(String username, String pin) {
         String query = DBQueries.changeUserPINQuery(username, AES256.encrypt(pin), ACCOUNT_TABLE);
@@ -372,7 +415,9 @@ public class DatabaseHandler {
     }
 
     /**
+     * FIXME
      * 
+     * @return  FIXME
      */
     public ArrayList<String> listUsernames() {
         ArrayList<String> userList = new ArrayList<>();
@@ -392,18 +437,19 @@ public class DatabaseHandler {
     }
 
     /**
-     * 
+     * FIXME
      * 
      * @param username
-     * @param maxTransactionsNum
-     * @return
+     * @param maxTransactionsNum    Number of transactions returned.
+     * @param transactionType       
+     * @return                      FIXME
      */
     public Map<String, String> getTransactionTypeNumMap(String username, String maxTransactionsNum, String transactionType) {
         /**
          * <Describe the content of queryMap here>
          */
-        Map<String, String> queryMap = new HashMap<>();
-        Map<String, String> transactionTypeNumMap = new HashMap<>();
+        Map<String, String> queryMap = new HashMap<>();                     // Holds all the DB queries
+        Map<String, String> transactionTypeNumMap = new HashMap<>();        // Holds all the results from the DB queries
 
         queryMap = DBQueries.listTransactionTypeQuery(username, maxTransactionsNum, transactionType);     //FIXME: Write documentation on what this function is and what it returns. Then use the executeQuery() method on all values (should be 5)
         // Run query and take results if exists
@@ -427,7 +473,42 @@ public class DatabaseHandler {
     }
 
     /**
-     * Closes database connection
+     * FIXME
+     * 
+     * @param maxTransactionsNum    Number of transactions returned.
+     * @param transactionType       FIXME
+     * @return                      FIXME
+     */
+    public Map<String, String> getEveryTransactionTypeNumMap(String maxTransactionsNum, String transactionType) {
+        /**
+         * <Describe the content of queryMap here>
+         */
+        Map<String, String> queryMap = new HashMap<>();
+        Map<String, String> everyTransactionTypeNumMap = new HashMap<>();
+
+        queryMap = DBQueries.listEveryTransactionTypeQuery(EVERY_TRANSACTION_TABLE, maxTransactionsNum, transactionType);     //FIXME: Write documentation on what this function is and what it returns. Then use the executeQuery() method on all values (should be 5)
+        // Run query and take results if exists
+        try {
+            ResultSet resultset = statement.executeQuery(queryMap.get("numOfEveryTransactions"));
+            everyTransactionTypeNumMap.put("numOfEveryTransactions", resultset.getString(1));
+            resultset = statement.executeQuery(queryMap.get("numOfEveryTransactionTypeCalls"));
+            everyTransactionTypeNumMap.put("numOfEveryTransactionTypeCalls", resultset.getString(1));
+            resultset = statement.executeQuery(queryMap.get("percentOfEveryTransactionTypeCalls"));
+            everyTransactionTypeNumMap.put("percentOfEveryTransactionTypeCalls", resultset.getString(1));
+            resultset = statement.executeQuery(queryMap.get("averageAmountOfEveryTransactionType"));
+            everyTransactionTypeNumMap.put("averageAmountOfEveryTransactionType", resultset.getString(1));
+            resultset = statement.executeQuery(queryMap.get("percentAmountOfEveryTransactionType"));
+            everyTransactionTypeNumMap.put("percentAmountOfEveryTransactionType", resultset.getString(1));
+            return everyTransactionTypeNumMap;
+        } catch (SQLException ex) {
+            Logger logger = Logger.getLogger(AccountsHandler.class.getName());
+            logger.log(Level.SEVERE, ex.getMessage(), ex);
+        }
+        return null;
+    }
+
+    /**
+     * Closes database connection.
      */
     public void closeDBConnection() {
         // Close the DB connection

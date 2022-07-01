@@ -34,19 +34,19 @@ public class AccountsHandler {
     /**
      * Maximum number of characters for username.
      */
-    final static int MAX_USERNAME_LEN = Integer.parseInt(ReadINIFile.MAX_USERNAME_LEN);;
+    final static int MAX_USERNAME_LEN = Integer.parseInt(ReadINIFile.MAX_USERNAME_LEN);
 
     /**
-     * Required number of digits for pin.
+     * Required number of digits for PIN.
      */
-    final static int REQUIRED_PIN_LEN = Integer.parseInt(ReadINIFile.REQUIRED_PIN_LEN);;
+    final static int REQUIRED_PIN_LEN = Integer.parseInt(ReadINIFile.REQUIRED_PIN_LEN);
 
     /**
      * Map of errors for account details requirement checking. Keys and values are set in
      * {@code checkRequirements()} method.
      * 
      * <p><p>Value will be {@code true} for all
-     * errors that are found with username or pin requirements. The value for {@code noErrors} key
+     * errors that are found with username or PIN requirements. The value for {@code noErrors} key
      * will be {@code true} only if every other value is {@code false}, meaning no errors were
      * found.
      * <p> Keys:
@@ -63,8 +63,8 @@ public class AccountsHandler {
     /**
      * Constructor that sets the {@code db} object.
      * 
-     * @param db        Holds database connection information and other database
-     *                  related methods for executing queries.
+     * @param db    Holds database connection information and other database
+     *              related methods for executing queries.
      */
     public AccountsHandler(DatabaseHandler db) {
         this.db = db;
@@ -74,9 +74,9 @@ public class AccountsHandler {
      * Checks {@code username} and {@code pin} for invalid characters and invalid
      * charcter lengths.
      * 
-     * @param username      Username trimmed input from the user
-     * @param pin           PIN trimmed input from the user
-     * @return              Map of {@code true} values if username and PIN meets requirements
+     * @param username  Username trimmed input from the user.
+     * @param pin       PIN trimmed input from the user.
+     * @return          Map of {@code true} values if username and PIN meets requirements.
      */
     public Map<String, Boolean> checkAccountRequirements(String username, String pin) {
         // Set map keys to default values
@@ -102,7 +102,7 @@ public class AccountsHandler {
      * Private method that checks {@code username} for both invalid characters
      * and invalid character lengths.
      * 
-     * @param username      Username trimmed input from the user
+     * @param username  Username trimmed input from the user.
      */
     private void checkUserRequirements(String username) {
         // Check if username contains invalid characters
@@ -138,7 +138,7 @@ public class AccountsHandler {
      * Private method that checks {@code pin} for both invalid characters
      * and invalid character lengths.
      * 
-     * @param pin       PIN trimmed input from the user
+     * @param pin   PIN trimmed input from the user.
      */
     private void checkPINRequirements(String pin) {
         // Check if pin contains invalid characters
@@ -186,9 +186,9 @@ public class AccountsHandler {
     /**
      * Checks username details to see if they have an existing user account.
      * 
-     * @param username          Username trimmed input from the user
-     * @return                  {@code true} if {@code accountDetails} match
-     *                          an existing account.
+     * @param username  Username trimmed input from the user.
+     * @return          {@code true} if {@code accountDetails} match
+     *                  an existing account.
      */
     public boolean validUsername(String username) {
         if (db.verifyUser(username)) { // FIXME: I left off here inside verifyUser()
@@ -202,7 +202,7 @@ public class AccountsHandler {
     }
 
     /**
-     * Verify if username and password details are correct admin credentials
+     * Verify if username and password details are correct admin credentials.
      * 
      * @param accountDetails    {@code Map} that holds username and pin:
      *                          <p>{@code accountDetails["username"]}

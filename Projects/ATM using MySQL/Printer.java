@@ -16,8 +16,8 @@ public class Printer {
     /**
      * Prints single column table.
      * 
-     * @param title         A string title for the table
-     * @param columnsArr    An array of columns for the table
+     * @param title         A string title for the table.
+     * @param columnsArr    An array of columns for the table.
      */
     public static void print1ColTable(String title, String[] columnsArr) {
         // Get longest String in array
@@ -45,8 +45,8 @@ public class Printer {
     /**
      * Finds the maximum string length from an array of strings for 1 column table.
      * 
-     * @param columnsArr    An array of columns for the table
-     * @return              <>
+     * @param columnsArr    An array of columns for the table.
+     * @return              Maximum length of longest string.
      */
     private static int maxLengthString1Col(String[] columnsArr) {
         int maxStringNum = 0;
@@ -60,7 +60,7 @@ public class Printer {
     /**
      * Prints multiple columns table.
      * 
-     * @param transArr  A list of string arrays for each row of the table
+     * @param transArr  A list of string arrays for each row of the table.
      */
     public static void printMultipleColTable(ArrayList<String[]> transArr) {
         List<String[]> myList = deepCopyListOfStrArr(transArr);
@@ -89,8 +89,8 @@ public class Printer {
     /**
      * Finds the maximum character length for a column.
      * 
-     * @param myList    A list of string arrays for each row of the table
-     * @return          <>
+     * @param myList    A list of string arrays for each row of the table.
+     * @return          Maximum length of longest string.
      */
     private static int[] _maxLengthStringMultipleCol(List<String[]> myList) {
         int numOfCols = myList.get(0).length;
@@ -115,9 +115,9 @@ public class Printer {
     /**
      * Prints a border around a table of multiple columns.
      * 
-     * @param transArr          A list of string arrays for each row of the table
-     * @param leftAlignFormat   An array of left alignment formats for each column 
-     * @param tableBorder       String that contains the border for the table
+     * @param transArr          A list of string arrays for each row of the table.
+     * @param leftAlignFormat   An array of left alignment formats for each column.
+     * @param tableBorder       String that contains the border for the table.
      */
     private static void _printMultipleColTable(List<String[]> transArr, List<String> leftAlignFormat, String tableBorder) {
         // Prints a border for title of table
@@ -141,10 +141,10 @@ public class Printer {
     }
 
     /**
-     * Makes a deep copy of the List of String arrays object
+     * Makes a deep copy of the List of String arrays object.
      * 
-     * @param myList    Original list of String arrays
-     * @return          <>
+     * @param myList    Original list of String arrays.
+     * @return          A deep copy of the the old list of {@code String}s.
      */
     public static List<String[]> deepCopyListOfStrArr(List<String[]> myList){
         List<String[]> newList = new ArrayList<String[]>(myList.size());

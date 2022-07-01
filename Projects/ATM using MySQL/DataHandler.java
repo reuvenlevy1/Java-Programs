@@ -12,7 +12,7 @@ public class DataHandler {
      * Runs methods to format String inputs for end user.
      * 
      * @param myString  Input string to be formatted
-     * @return
+     * @return          FIXME
      */
     public static String beautifier(String myString) {
         // Assure there's 2 digits after decimal
@@ -30,7 +30,7 @@ public class DataHandler {
      * Assure String is in money format with 2 decimal places.
      * 
      * @param myString  Input string from chosen ATM Menu option
-     * @return
+     * @return          FIXME
      */
     private static String twoDecimalFormat(String myString) {
         // Check if string starts with a number and contains a decimal
@@ -46,7 +46,7 @@ public class DataHandler {
      * Prefix dollar sign to money.
      * 
      * @param myString  Input string from chosen ATM Menu option
-     * @return
+     * @return          FIXME
      */
     private static String addCommasToMoneyFormat(String myString) {
         // Check if starts with, and only contains, numbers
@@ -70,9 +70,10 @@ public class DataHandler {
     }
 
     /**
+     * FIXME
      * 
-     * @param myString
-     * @return
+     * @param myString  FIXME
+     * @return          FIXME
      */
     private static String addDollarSign(String myString) {
         // Check if starts with, and only contains, numbers
@@ -86,7 +87,7 @@ public class DataHandler {
      * Removes the comment character from a string.
      * 
      * @param myString  Input string from chosen ATM Menu option data
-     * @return
+     * @return          FIXME
      */
     private static String removeCommentChar(String myString) {
         // Remove comment character
@@ -99,8 +100,8 @@ public class DataHandler {
      * Check if user input is valid for money transactions or contains invalid
      * characters.
      * 
-     * @param input     User input for expected money format
-     * @return
+     * @param input User input for expected money format
+     * @return      FIXME
      */
     public static boolean checkValidMoneyInput(String input) {
         // Check if input is not only numbers or contains more than 2 digits after
@@ -113,6 +114,12 @@ public class DataHandler {
         return true;
     }
 
+    /**
+     * FIXME
+     * 
+     * @param num   FIXME
+     * @return      FIXME
+     */
     public static boolean checkNumRequirements(String num) {
         // Check if num contains invalid characters
         char[] pinInvalidCharsList = "abcdefghijklmnopqrstuvwxyz!@#$%^&*()-_=+`~\\|[];:'\",./?".toCharArray();
@@ -130,10 +137,10 @@ public class DataHandler {
      *      <p>If the user typed "quit", display closing message end the program</p>
      * </pre></blockquote>
      * 
-     * @param input     User input
-     * @param db        Holds database connection information
-     * @return          <p>{@code true} if {@code input} is not empty</p>
-     *                  <p>{@code false} if {@code input} is empty</p>
+     * @param input User input
+     * @param db    Holds database connection information
+     * @return      <p>{@code true} if {@code input} is not empty</p>
+     *              <p>{@code false} if {@code input} is empty</p>
      */
     public static boolean checkInput(String input, DatabaseHandler db) {
         // Check user input
@@ -144,11 +151,11 @@ public class DataHandler {
     }
 
     /**
+     * FIXME
      * 
-     * 
-     * @param input     User Input
-     * @param db        Holds database connection information
-     * @return
+     * @param input User Input
+     * @param db    Holds database connection information
+     * @return      FIXME
      */
     public static boolean checkInputAllowEmpty(String input, DatabaseHandler db) {
         // Check user input
@@ -168,8 +175,8 @@ public class DataHandler {
      * Closes database connection and exits program if input is "quit"
      * in any letter casing.
      * 
-     * @param input     User input
-     * @param db        Holds database connection information
+     * @param input User input
+     * @param db    Holds database connection information
      */
     private static void checkInputForQuit(String input, DatabaseHandler db) {
         if (input.toLowerCase().equals("quit")) {

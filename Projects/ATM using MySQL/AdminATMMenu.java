@@ -5,12 +5,13 @@ import java.util.Map;
 
 /**
  * The {@code AdminATMMenu} class controls the ATM options chosen by the admin.
- * These consist of 4 options:
- * <p>{@code 1. Add Account}                  Add a new user
- * <p>{@code 2. User Transaction History}     Get a user's full transaction history
- * <p>{@code 3. Change User PIN}              Change a user's PIN from a list of users
- * <p>{@code 4. DELETE ACCOUNT}               Delete a user
- * <p>{@code 5. Sign Out}                     Sign out of admin account
+ * This consists of 6 options:
+ * <p>{@code 1. Add Account}                Add a new user.
+ * <p>{@code 2. User Transaction History}   Get a user's full transaction history.
+ * <p>{@code 3. Accounts Stats}             Get statistical data on all accounts.
+ * <p>{@code 4. Change User PIN}            Change a user's PIN from a list of users.
+ * <p>{@code 5. DELETE ACCOUNT}             Delete a user.
+ * <p>{@code 6. Sign Out}                   Sign out of admin account.
  * 
  * @author Reuven Levy
  * @version 1.0
@@ -29,35 +30,43 @@ public class AdminATMMenu {
      */
     AccountsHandler ah;
 
+    /**
+     * Default maximum number of transactions returned.
+     */
+    final static int DEFAULT_MAX_TRANSACTIONS = Integer.parseInt(ReadINIFile.DEFAULT_MAX_TRANSACTIONS);
+
+    /**
+     * Default number of transactions returned.
+     */
+    static boolean accountAdded = false;
+
     // ATM string options
     final static String ADD_ACCOUNT = "Add Account";
     final static String USER_TRANSACTION_HISTORY = "User Transaction History";
+    final static String ACCOUNTS_STATS = "AccountS Stats";
     final static String CHANGE_USER_PIN = "Change User PIN";
     final static String DELETE_ACCOUNT = "DELETE ACCOUNT";
     final static String SIGN_OUT = "Sign Out";
     // ATM number options
     final static String ADD_ACCOUNT_NUM = "1";
     final static String USER_TRANSACTION_HISTORY_NUM = "2";
-    final static String CHANGE_USER_PIN_NUM = "3";
-    final static String DELETE_ACCOUNT_NUM = "4";
-    final static String SIGN_OUT_NUM = "5";
+    final static String ACCOUNTS_STATS_NUM = "3";
+    final static String CHANGE_USER_PIN_NUM = "4";
+    final static String DELETE_ACCOUNT_NUM = "5";
+    final static String SIGN_OUT_NUM = "6";
     // Other keywords
     final static String BACK = "Back";
     final static String QUIT = "Quit";
     /**
      * A list of all admin ATM menu options.
      */
-    final static String[] adminATMMenuOptions = new String[] {        //FIXME - Add options here when created
+    final static String[] adminATMMenuOptions = new String[] {
         ADD_ACCOUNT_NUM + ". " + ADD_ACCOUNT,
         USER_TRANSACTION_HISTORY_NUM + ". " + USER_TRANSACTION_HISTORY,
+        ACCOUNTS_STATS_NUM + ". " + ACCOUNTS_STATS,
         CHANGE_USER_PIN_NUM + ". " + CHANGE_USER_PIN,
         DELETE_ACCOUNT_NUM + ". " + DELETE_ACCOUNT,
         SIGN_OUT_NUM + ". " + SIGN_OUT};
-
-    /**
-     * Determines if an account has been added.
-     */
-    static boolean accountAdded = false;
 
     /**
      * Constructor that runs admin ATM menu options.
@@ -67,8 +76,9 @@ public class AdminATMMenu {
      *                          <p>{@code accountDetails["pin"]}
      * @param db                Holds database connection information and other database
      *                          related methods for executing queries.
+     * @param sh                FIXME
      */
-    AdminATMMenu(Map<String, String> accountDetails, DatabaseHandler db, AccountsHandler ah) {
+    AdminATMMenu(Map<String, String> accountDetails, DatabaseHandler db, AccountsHandler ah, StatsHandler sh) {
         this.db = db;
         this.ah = ah;
 
@@ -133,12 +143,8 @@ public class AdminATMMenu {
                         // CSVFileHandler.csvOpen = true;
                         accountAdded = true;
                     }
-                } else if (selection.equals(USER_TRANSACTION_HISTORY_NUM) || selection.equals(
-                    USER_TRANSACTION_HISTORY)) {
-                    
-                    System.out.println(USER_TRANSACTION_HISTORY.toUpperCase() + "\n"
-                        + Messages.returnToATMMenuMessage());
-                    
+                } else if (selection.equals(USER_TRANSACTION_HISTORY_NUM) || selection.equals(USER_TRANSACTION_HISTORY)) {
+                    System.out.println(USER_TRANSACTION_HISTORY.toUpperCase() + "\n" + Messages.returnToATMMenuMessage());
                     // Username for the transactions
                     String username = "";
                     String maxTransactionsNum = "";
@@ -174,7 +180,7 @@ public class AdminATMMenu {
                                 // Check if username exists from list of usernames
                                 if (userList.stream().anyMatch(username::equalsIgnoreCase)) {
                                     validUsernameRequirements = true;
-                                    break;                                                                              //FIXME: test to see if this should remain or be deleted
+                                    break;
                                 } else
                                     // Error message
                                     System.out.println(Messages.usernameErrorMessage() + "\n");
@@ -197,9 +203,9 @@ public class AdminATMMenu {
                                 break;
                             if (DataHandler.checkInputAllowEmpty(maxTransactionsNum, db)) {
                                 // Check if maxTransactionsNum is a number
-                                if (DataHandler.checkNumRequirements(maxTransactionsNum)) {             //FIXME: put an or statement to set a limit with this data?
+                                if (DataHandler.checkNumRequirements(maxTransactionsNum)) {
                                     validTransNumRequirements = true;
-                                    break;                                                              //FIXME: test to see if this should remain or be deleted
+                                    break;
                                 } else
                                     // Error message
                                     System.out.println(Messages.invalidNumInput() + "\n");
@@ -212,14 +218,47 @@ public class AdminATMMenu {
                             // Use query to pull up to last maxTransactionNum records of user transaction data
                             userTransHistory = db.getUserTransactionHistory(username, Integer.parseInt(maxTransactionsNum));
                         else
-                            // Use query to pull up to last DEFAULT_MAX_TRANS_NUM records of user transaction data
-                            // userTransHistory = db.getUserTransactionHistory(accountDetails.get("username"), DEFAULT_MAX_TRANS_NUM);                          //FIXME: where do we keep DEFAULT_MAX_TRANS_NUM value? maybe all .ini file settings appear in a new class called "InitialSettings.java"
-                            userTransHistory = db.getUserTransactionHistory(username, 30);                                                                      //FIXME: currently put 30 instead of variable. When above is fixed, delete this line
+                            // Use query to pull up to last DEFAULT_MAX_TRANSACTIONS records of user transaction data
+                            userTransHistory = db.getUserTransactionHistory(username, DEFAULT_MAX_TRANSACTIONS);
                             // Print transaction history starting with most recent
                             Messages.transactionHistoryMessage(userTransHistory);
                             // System.out.println("\n" + Messages.exitMessage() + "\n\n");
                             // break;
                     }
+                } else if (selection.equals(ACCOUNTS_STATS_NUM) || selection.equals(ACCOUNTS_STATS)) {
+                    System.out.println(ACCOUNTS_STATS.toUpperCase() + "\n" + Messages.returnToATMMenuMessage());
+                    String maxTransactionsNum = "";
+                    boolean validTransNumRequirements = false;
+                    
+                    // Ask the admin for a number of transactions that should be returned
+                    System.out.println(Messages.accountTransNumMessage());
+
+                    while (true) {
+                        maxTransactionsNum = Main.userInput.nextLine().trim();
+                        // Check admin input
+                        if (maxTransactionsNum.toLowerCase().equals(BACK.toLowerCase()))
+                            break;
+                        if (DataHandler.checkInputAllowEmpty(maxTransactionsNum, db)) {
+                            // Check if maxTransactionsNum is a number
+                            if (DataHandler.checkNumRequirements(maxTransactionsNum)) {
+                                validTransNumRequirements = true;
+                                break;
+                            } else
+                                // Error message
+                                System.out.println(Messages.invalidNumInput() + "\n");
+                        }
+                    }
+                    
+                    if (validTransNumRequirements) {
+                        if (!maxTransactionsNum.isEmpty())
+                            // Print account stats
+                            sh.getAdminStats(maxTransactionsNum);
+                        else
+                            // Print account stats default
+                            sh.getAdminStats(Integer.toString(DEFAULT_MAX_TRANSACTIONS));
+                    }
+                    System.out.println("\n" + Messages.exitMessage() + "\n\n");
+                    break;
                 } else if (selection.equals(CHANGE_USER_PIN_NUM) || selection.toLowerCase().equals(CHANGE_USER_PIN)) {
                     String username = "";
                     // Map of errors for account details requirement checking
@@ -414,7 +453,7 @@ public class AdminATMMenu {
                     // SIGN OUT from account
                     System.out.println(SIGN_OUT.toUpperCase() + "\n" + Messages.signOutMessage()
                         + "\n");
-                    break;                                                                                              //FIXME: test to see if this should remain or be deleted
+                    break;
                 } else {
                     // Error message
                     System.out.println(Messages.atmMenuInvalidChoiceMessage());

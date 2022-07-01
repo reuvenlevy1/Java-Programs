@@ -35,10 +35,27 @@ public class Main {
 
         while (true) {
             SignIn signIn = new SignIn(db);
+
+            //FIXME - Add documentation above all method names
+                //--> Finish:
+                    //DBQueries.java 2 query map comment documentation
+                    //StatsHandler.java, everything
+                    //DatabaseHandler.java, most
+                //--> Completed for Main.java, SignIn.java, ATMDataHandler.java, AdminATMMenu.java, ATMMenu.java, AccountsHandler.java, ReadINIFile.java, Printer.java
+                    
             
-           
             //FIXME - Complete User Stats
                 // Stats should ignore any transactions that have a "transaction_type" that says "New Account".
+            
+            //FIXME: in adminATM, put checks for any options that require users to exist. If they don't exist, have a message telling them to create a user first
+
+            //FIXME: Check .ini file for all values present, if any value is missing, come up with error message specific to what is missing (can use hashmap for all errors similar to what was done in Messaging class)
+                //In the message mention that if they wish to generate a new .ini file then they must delete theirs first and a fresh one will be generated
+                    //Have the ini file be created with all the default content if missing --> Create a new class for this? Already have an INI class for this? If so, place create .ini file method within that class
+
+                    //Add this as a future feature within the readme:
+                        // --> Have the .ini file be a settings instead that the user must configure when first logging into an account or creating an account that will have all the information for the .ini file.
+                        // In here, the user should have control over what they can create and what they cannot.
 
             
             //FIXME - Add Admin ability to see user stats based on a transaction number they place
@@ -50,9 +67,6 @@ public class Main {
             //FIXME - Add admin ability to NOT be kicked out of ATM after every transaction
                 // In Progress - Will need to finish during testing phase
             
-
-            //FIXME - Add documentation above all method names
-                    //--> Completed for Main.java, SignIn.java, ATMDataHandler.java, AdminATMMenu.java, ATMMenu.java, AccountsHandler.java
 
             //FIXME - what happens when you have database tables already created and you change the settings in the ini file. What happens to the data? does it change? create a new table? delete the table and replace it?
             //FIXME - test user transaction history

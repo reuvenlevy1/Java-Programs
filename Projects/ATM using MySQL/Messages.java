@@ -12,6 +12,10 @@ import java.util.Map;
 public class Messages {
     public Messages() {}
 
+    public static String dbConnectionMessage() {
+        return "Database connection is successful\n";
+    }
+    
     public static String greetMessage() {
         return "Welcome to Bank of Money!";
     }
@@ -57,14 +61,14 @@ public class Messages {
     /**
      * <include all of the errors in documentation explanation that it checks for to build this error message>
      * 
-     * @param errorMap  Map of failed requirements:
-     *                  <p> Key is {@code String} of the requirement name
-     *                  <p> Value is {@code Boolean} where {@code true} is failing the requirement
+     * @param errorMap      Map of failed requirements:
+     *                      <p> Key is {@code String} of the requirement name
+     *                      <p> Value is {@code Boolean} where {@code true} is failing the requirement
      * 
-     * @param minUserLen
-     * @param maxUserLen
-     * @param reqPINLen
-     * @return          Built String of errors
+     * @param minUserLen    
+     * @param maxUserLen    
+     * @param reqPINLen     
+     * @return              Built String of errors
      */
     public static String accountCheckRequirementsErrorMessage(Map<String, Boolean> errorMap,
         int minUserLen, int maxUserLen, int reqPINLen) {
@@ -99,6 +103,7 @@ public class Messages {
     }
 
     /**
+     * FIXME
      * 
      * @return
      */
@@ -135,7 +140,7 @@ public class Messages {
     }
 
     /**
-     * 
+     * FIXME
      * 
      * @param username
      * @return
@@ -145,7 +150,7 @@ public class Messages {
     }
 
     /**
-     * 
+     * FIXME
      * 
      * @param username
      * @return
@@ -186,10 +191,6 @@ public class Messages {
         return "Your PIN could not be successfully changed at this time. Please try again.";
     }
 
-    public static String atmMenuIncompleteMessage() {
-        return "This choice is currently being worked on. Please check again in the future.";
-    }
-
     public static String atmMenuInvalidChoiceMessage() {
         return "You have chosen an invalid option. Please try again.";
     }
@@ -199,7 +200,7 @@ public class Messages {
     }
 
     /**
-     * 
+     * FIXME
      * 
      * @param amount
      * @param balance
@@ -348,13 +349,13 @@ public class Messages {
     /**
      * 
      * 
-     * @param transTypeDepositNum
+     * @param transArr
      */
-    public static void transactionStatsMessage(Map<String, String> transTypeDepositNum) {
-        // String[] title = new String[]{"Transaction #", "Transaction Type", "Amount", "Balance"};
-        // // Add title to beginning of list
-        // userTransHistory.add(0, title);
-        // System.out.println("Transactions are listed from most recent to oldest.\n");
-        // Printer.printMultipleColTable(userTransHistory);
+    public static void accountStatsMessage(ArrayList<String[]> transArr) {
+        String[] title = new String[]{"Deposit", "Withdrawal"};
+        // Add title to beginning of list
+        transArr.add(0, title);
+        System.out.println("Account stats are listed below.\n");
+        Printer.printMultipleColTable(transArr);
     }
 }

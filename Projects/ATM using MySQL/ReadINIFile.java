@@ -2,7 +2,6 @@ import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.Map;
 
 /**
  * The {@code READINIFile} class gets user configuration details from the {@code atm_details.ini}
@@ -65,21 +64,16 @@ public class ReadINIFile {
     public static String REQUIRED_PIN_LEN;
 
     /**
-     * Default name of the table created to hold all user account data.
+     * Default maximum number of transactions returned.
      */
-    public static String ACCOUNT_TABLE;
-
-    /**
-     * Default name of the table created to hold all user transactions data.
-     */
-    public static String EVERY_TRANSACTION_TABLE;
+    public static String DEFAULT_MAX_TRANSACTIONS;
 
     /**
      * Reads {@code atm_details.ini} file and gets database, max/min user length, PIN length
      * and account table name information.
      * 
-     * @throws FileNotFoundException    If {@code atm_details.ini} file cannot be found
-     * @throws IOException              If {@code atm_details.ini} file cannot be opened or closed
+     * @throws FileNotFoundException    If {@code atm_details.ini} file cannot be found.
+     * @throws IOException              If {@code atm_details.ini} file cannot be opened or closed.
      */
     public void readUserCSV() throws FileNotFoundException, IOException {
         /**
@@ -118,12 +112,9 @@ public class ReadINIFile {
                     } else if (line.contains("Required_PIN_Length")) {
                         equalIndex = line.indexOf("=");
                         REQUIRED_PIN_LEN = line.substring(equalIndex+1).trim();
-                    } else if (line.contains("Account_Table_Name")) {
+                    } else if (line.contains("Default_Max_Transactions_Num")) {
                         equalIndex = line.indexOf("=");
-                        ACCOUNT_TABLE = line.substring(equalIndex+1).trim();
-                    } else if (line.contains("Every_Transaction_Table_Name")) {
-                        equalIndex = line.indexOf("=");
-                        EVERY_TRANSACTION_TABLE = line.substring(equalIndex+1).trim();
+                        DEFAULT_MAX_TRANSACTIONS = line.substring(equalIndex+1).trim();
                     }
                 }
             }

@@ -41,12 +41,12 @@ public class SignIn {
      * Uses a while loop to continously ask user for {@code username} and {@code pin}
      * until login deatils are valid. Will add user details into a Map, {@code accountDetails},
      * which will be used to verify the following:
-     * <p>1. If the user input was set to "quit", which will exit the program
-     * <p>2. If the {@code username} and {@code pin} meet character requirements
-     * <p>3. If the login details provided match that of an Admin or a general user and send them
+     * <p>1. If the user input was set to "quit", which will exit the program.
+     * <p>2. If the {@code username} and {@code pin} meet character requirements.
+     * <p>3. If the login details provided match that of an Admin or a general user and send the
      * to the proper ATM menu.
      * 
-     * @param db    Holds database connection information
+     * @param db    Holds database connection information.
      */
     public SignIn(DatabaseHandler db) {
         this.db = db;
@@ -90,7 +90,7 @@ public class SignIn {
 
             // Check if username and PIN requirements contained no errors
             if (errorMap.get("noErrors")) {
-                // Check if user account details are valid
+                // Check if user account details exist for login
                 valid = validateAcc.validAccount(accountDetails);
             } else
                 System.out.println(Messages.accountCheckRequirementsErrorMessage(errorMap,
@@ -99,11 +99,15 @@ public class SignIn {
         }
 
         if (validUser && validPIN && validateAcc.verifyAdmin(accountDetails)) {
+            // Create new stats object
+            StatsHandler sh = new StatsHandler(db);
             // Send to AdminATMMenu page for valid admin account
-            AdminATMMenu atm = new AdminATMMenu(accountDetails, db, ah);
+            AdminATMMenu atm = new AdminATMMenu(accountDetails, db, ah, sh);                // FIXME: finish implementing maxTransactionsNum to match user input and IF nothing was placed, use the default in .ini file. See how AdminATMMenu does this
         } else if (validUser && validPIN) {
+            // Create new stats object
+            StatsHandler sh = new StatsHandler(db);
             // Send to ATMMenu page for valid account
-            ATMMenu atm = new ATMMenu(accountDetails, db, ah);
+            ATMMenu atm = new ATMMenu(accountDetails, db, ah, sh);                          // FIXME: finish changing all instances of maxTransactionsNum to match user input and IF nothing was placed, use the default in .ini file. See how AdminATMMenu does this
         }
     }
 }
