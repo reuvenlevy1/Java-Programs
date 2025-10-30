@@ -141,33 +141,33 @@ How to use:
   - Successful POST responses (Patient/Doctor/Appointment)
 
 ### Adding Patients
-![[docs/images/Pasted image 20251029221613.png]]
-![[docs/images/Pasted image 20251029221737.png]]
+![](https://github.com/reuvenlevy1/Java-Programs/blob/master/Projects/healthcare/docs/images/Pasted%20image%2020251029221613.png)
+![](https://github.com/reuvenlevy1/Java-Programs/blob/master/Projects/healthcare/docs/images/Pasted%20image%2020251029221737.png)
 
 ### Retrieving Patients
-![[docs/images/Pasted image 20251029221841.png]]
+![](https://github.com/reuvenlevy1/Java-Programs/blob/master/Projects/healthcare/docs/images/Pasted%20image%2020251029221841.png)
 
 ### Updating Patient
-![[docs/images/Pasted image 20251029221922.png]]
+![](https://github.com/reuvenlevy1/Java-Programs/blob/master/Projects/healthcare/docs/images/Pasted%20image%2020251029221922.png)
 
 ### Retrieving Updated Patients
-![[docs/images/Pasted image 20251029222025.png]]
+![](https://github.com/reuvenlevy1/Java-Programs/blob/master/Projects/healthcare/docs/images/Pasted%20image%2020251029222025.png)
 
 ### Delete Patient
-![[docs/images/Pasted image 20251029222613.png]]
+![](https://github.com/reuvenlevy1/Java-Programs/blob/master/Projects/healthcare/docs/images/Pasted%20image%2020251029222613.png)
 
 ### Retrieving Patient
-![[docs/images/Pasted image 20251029223027.png]]
+![](https://github.com/reuvenlevy1/Java-Programs/blob/master/Projects/healthcare/docs/images/Pasted%20image%2020251029223027.png)
 
 ### Adding Doctor
-![[docs/images/Pasted image 20251029222217.png]]
+![](https://github.com/reuvenlevy1/Java-Programs/blob/master/Projects/healthcare/docs/images/Pasted%20image%2020251029222217.png)
 
 ### Retrieving Doctor
-![[docs/images/Pasted image 20251029223059.png]]
+![](https://github.com/reuvenlevy1/Java-Programs/blob/master/Projects/healthcare/docs/images/Pasted%20image%2020251029223059.png)
 
 ### Add Valid Appointment
-![[docs/images/Pasted image 20251029223131.png]]
+![](https://github.com/reuvenlevy1/Java-Programs/blob/master/Projects/healthcare/docs/images/Pasted%20image%2020251029223131.png)
 
 ### Add Invalid Appointment
-![[docs/images/Pasted image 20251029223145.png]]
+![](https://github.com/reuvenlevy1/Java-Programs/blob/master/Projects/healthcare/docs/images/Pasted%20image%2020251029223145.png)
 Receives a `400` response for overlapping appointment.
